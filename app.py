@@ -336,7 +336,7 @@ app.layout = html.Div(
                 dbc.ModalBody(
                     children = [
                         dcc.Markdown("Welcome! In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), I have created this dashboard to help the public search for and visualize the UC's data on employee compensation."),
-                        dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I make improvements.")
+                        dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I continue to make improvements.")
                     ]
                 ),
                 dbc.ModalFooter(
