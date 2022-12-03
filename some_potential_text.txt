@@ -1,0 +1,8 @@
+        html.Hr(),
+        dcc.Markdown('Applying the same percentage raise, even among graduate students, breeds inequity. From 2011 to 2021, the lowest-paid graduate student researchers saw a $5k increase while the highest-paid saw a $10k increase (shown in the default plots).'),
+        dcc.Markdown('However, this is nothing compared to the massive raises (in absolute dollar terms) of employees with vastly greater earnings (add UC President to the plots, for example).'),
+        html.Hr(),
+        dcc.Markdown("For whatever reason, we tend to talk about raises as a percentage of our previous year's income. By making this our point of reference, we benefit individuals who are already making more by giving them disproportionately larger raises in terms of absolute dollars. Compounded year after year, this inequity becomes exorbitant."),
+        dcc.Markdown("**Percentage-based raises are inherently regressive**. This really is all common sense, but percentages can misdirect our sense of outrage by obscuring absolute dollar amounts. To put this into context, graduate student workers making $27K asking for a 100% raise seems unreasonable. Meanwhile, chancellors getting up to a 28% raise on $450k was approved earlier this year. At the end of the day, one of these people gets an extra $27k that goes towards cost of living while the other gets $120k that goes towards idk a yacht."),
+        dcc.Markdown("If we want to see raises that are truly equitable, we need to **tie our wages to our cost of living**, not our prior year's salary."),
+        

@@ -260,30 +260,16 @@ app.layout = html.Div(
                     children = [
                         html.P('Select one of the following options:'),
                         dcc.Dropdown(
-                            options = ['Total Pay', 'Total Pay & Benefits'],
-                            value = 'Total Pay & Benefits',
+                            options = ['Total Pay', 'Total Pay'],
+                            value = 'Total Pay',
                             multi=False,
                             clearable = False,
                             id = 'select-compensation-dropdown'
                         ),
                         dbc.Button('Refresh Figures', id = 'refresh-figures-button', className='button'),
                     ],
-                    title = 'Selected Compensation: Total Pay & Benefits',
+                    title = 'Selected Compensation: Total Pay',
                     id = 'compensation-accordion-item'
-                ),
-                dbc.AccordionItem(
-                    children = [
-                        initial_wage_container,
-                    ],
-                    title = 'Starting Compensation',
-                    id = 'starting-compensation-accordion-item'
-                ),
-                dbc.AccordionItem(
-                    children = [
-                        year_range_container,
-                    ],
-                    title = 'Years Range',
-                    id = 'years-range-accordion-item'
                 ),
                 dbc.AccordionItem(
                     children = [
@@ -307,9 +293,9 @@ app.layout = html.Div(
                     title = 'Compare Employees'
                 )
             ],
-            id = 'accordion',
+            id = 'top-accordion',
             always_open = True,
-            active_item = ['item-1', 'item-2', 'item-3', 'item-4']    # this needs to be string id (not assigned id)
+            active_item = ['item-1', 'item-2']    # this needs to be string id (not assigned id, which starts at 0)
         ),
         html.Hr(),
         html.H4('How does your compensation stack up against other UC employees?'),
@@ -317,14 +303,36 @@ app.layout = html.Div(
         dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
         html.Hr(),
         html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers or bosses?'), 
-        html.H6('This plot displays how your specified initial wage would change if you received the same year-to-year percentage-based raises as other employees.'),
-        dcc.Markdown("*If you're not seeing an employee that you added, try narrowing the year range.* Only employees with data that spans the specified year range are plotted."),
+        dbc.Accordion(
+            children=[
+                dbc.AccordionItem(
+                    children = [
+                        initial_wage_container,
+                    ],
+                    title = 'Starting Compensation',
+                    id = 'starting-compensation-accordion-item'
+                ),
+                dbc.AccordionItem(
+                    children = [
+                        year_range_container,
+                    ],
+                    title = 'Year Range',
+                    id = 'year-range-accordion-item'
+                ),
+            ],
+            always_open = True,
+            active_item = ['item-0', 'item-1'],    # this needs to be string id (not assigned id, which starts at 0)
+            id = 'bottom-accordion'
+        ),
+        html.H6('This plot displays how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years.'),
         dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
         html.Hr(),
-        html.H4('How do your raises compare in terms of absolute dollar amounts?'), 
-        html.H6("We tend to talk about raises as a percentage of our prior year's income. But, this obscures the growth in income (in terms of absolute dollars) between high-income employees versus low-income employees."),
-        html.H6('The following plot displays the absolute change in compensation (conveyed by the length of the lines) over the selected time range.'),
-        dcc.Markdown("*Like the previous plot, if someone you added is not shown on the plots, try narrowing the years range.*"),
+        html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
+        dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary**."),
+        dcc.Markdown("Our system of tying raises to a percentage of our prior year's income locks lower-paid positions out of real wage growth, exacerabating income disparities between higher-paid executives and lower-paid workers."),
+        dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot."),
+        dcc.Markdown("The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
+        dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
 
         dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
         html.Hr(),
@@ -604,7 +612,8 @@ def reset_fig_lollipop():
             paper_bgcolor=colors.PLOT_BACKGROUND_COLOR,
             plot_bgcolor=colors.PLOT_BACKGROUND_COLOR,
             showlegend=False,
-            title_font=dict(family="Arial", size=24),
+            title_font=dict(family="Arial", size=20),
+            title_x=0,
             yaxis=dict(linewidth=1, linecolor = "black", 
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 automargin = True,
@@ -631,7 +640,8 @@ def reset_figures():
             paper_bgcolor=colors.PLOT_BACKGROUND_COLOR,
             plot_bgcolor=colors.PLOT_BACKGROUND_COLOR,
             showlegend=False,
-            title_font=dict(family="Arial", size=18),
+            title_font=dict(family="Arial", size=20),
+            title_x=0,
             yaxis=dict(linewidth=1, linecolor = "black", 
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 title = dict(text = "Compensation (USD)"),
@@ -767,7 +777,8 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
         fig_projected_wage_indices.append(len(fig_projected_wages.data) - 1)     
 
     df_traces_in_projected_wages = pd.concat([df_traces_in_projected_wages, pd.DataFrame({DataSchema.NAME: names_2add_projected_wages, 'Index': fig_projected_wage_indices})]).astype({DataSchema.NAME: "category", "Index": int})     # update ledger
-    
+    fig_projected_wages.update_layout(title="Only showing employees with data spanning the selected year range: " + str(min_year) + "-" + str(max_year))
+
     # create df_lollipop (pivot_wider the first and last years)
     # df lollipop needs to be reset every time because of sorting by largest to smallest
     df_lollipop = df_combined_filtered[df_combined_filtered[DataSchema.NAME].isin(names_wanted_in_projected_wages)]         # df lollipop uses the same wanted names as projected wages   
@@ -806,6 +817,8 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
                         marker_size = 15,
                         marker_color=colors.END_MARKER_COLOR)
         )
+
+        fig_lollipop.update_layout(title="Only showing employees with data spanning the selected year range: " + str(min_year) + "-" + str(max_year))
 
     return df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop
 
