@@ -333,8 +333,12 @@ app.layout = html.Div(
         dbc.Modal(
             children = [
                 dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
-                dbc.ModalBody("Welcome! This dashboard visualizes publicly available data on UC employee compensation."),
-                dbc.ModalBody("For best experience, please use a large-screen device. This project is under active development, so please bear with us as we improve the app."),
+                dbc.ModalBody(
+                    children = [
+                        dcc.Markdown("Welcome! In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), I have created this dashboard to help the public search for and visualize the UC's data on employee compensation."),
+                        dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I make improvements.")
+                    ]
+                ),
                 dbc.ModalFooter(
                     dbc.Button("Close", id="close-modal-button")
                 ),
