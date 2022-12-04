@@ -324,8 +324,8 @@ app.layout = html.Div(
             id = 'bottom-accordion'
         ),
         html.Hr(),
-        html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers or bosses?'), 
-        html.H6('This plot displays how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years.'),
+        html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
+        html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years.'),
         dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
         html.Hr(),
         html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
@@ -343,7 +343,8 @@ app.layout = html.Div(
                 dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
                 dbc.ModalBody(
                     children = [
-                        dcc.Markdown("Welcome! In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), I have created this dashboard to help the public search for and visualize the UC's data on employee compensation."),
+                        dcc.Markdown("Welcome!"),
+                        dcc.Markdown("In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation."),
                         dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I continue to make improvements.")
                     ]
                 ),
