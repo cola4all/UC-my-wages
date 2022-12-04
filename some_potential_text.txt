@@ -6,3 +6,9 @@
         dcc.Markdown("**Percentage-based raises are inherently regressive**. This really is all common sense, but percentages can misdirect our sense of outrage by obscuring absolute dollar amounts. To put this into context, graduate student workers making $27K asking for a 100% raise seems unreasonable. Meanwhile, chancellors getting up to a 28% raise on $450k was approved earlier this year. At the end of the day, one of these people gets an extra $27k that goes towards cost of living while the other gets $120k that goes towards idk a yacht."),
         dcc.Markdown("If we want to see raises that are truly equitable, we need to **tie our wages to our cost of living**, not our prior year's salary."),
         
+
+We tend to talk about raises in terms of percentages, but this is just one part of the full picture. The *absolute dollar amount* that we receive in a raise depends on this percentage *as well as our prior year's salary*. 
+Our system of tying raises to a percentage of prior year income locks lower-paid positions out of real wage growth, exacerabating income disparities between higher-paid executives and lower-paid workers.
+See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot.
+
+This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between high-income executives and low-income workers.

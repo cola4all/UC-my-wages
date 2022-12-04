@@ -69,12 +69,6 @@ hr {
     margin-bottom: 1rem;
 }
 
-#initial-wage-label {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: end;
-}
-
 #initial-wage-dropdown {
     grid-column: 1 / span 2;
     grid-row: 2;
