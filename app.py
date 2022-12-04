@@ -235,128 +235,132 @@ print('creating layout:')
 # create layout
 app.layout = html.Div(
     className="app-div",
-    children=[
-        # data stores
-        dcc.Store(id='filtered-names-data'),
-        dcc.Store(id='filtered-jobs-data'),
-        dcc.Store(id='filtered-combined-data'),
-        dcc.Store(id='jobs-data'),
-        dcc.Store(id='names-data'),
-        dcc.Store(id='table-data-records-list'),
-        dcc.Store(id='traces-in-real-wages'),
-        dcc.Store(id='traces-in-projected-wages'),
-        dcc.Store(id='schema-class'),
-       
+    children =[
         html.Header(
             className = "title-container",
             children=[
                 html.H1(app.title)
             ]
         ),
+        html.Div(
+        className="content-div",
+        children=[
+            # data stores
+            dcc.Store(id='filtered-names-data'),
+            dcc.Store(id='filtered-jobs-data'),
+            dcc.Store(id='filtered-combined-data'),
+            dcc.Store(id='jobs-data'),
+            dcc.Store(id='names-data'),
+            dcc.Store(id='table-data-records-list'),
+            dcc.Store(id='traces-in-real-wages'),
+            dcc.Store(id='traces-in-projected-wages'),
+            dcc.Store(id='schema-class'),
 
-        dbc.Accordion(
-            children = [
-                dbc.AccordionItem(
-                    children = [
-                        html.P('Select one of the following options:'),
-                        dcc.Dropdown(
-                            options = ['Total Pay & Benefits', 'Total Pay'],
-                            value = 'Total Pay',
-                            multi=False,
-                            clearable = False,
-                            id = 'select-compensation-dropdown'
-                        ),
-                        dbc.Button('Refresh Figures', id = 'refresh-figures-button', className='button'),
-                    ],
-                    title = 'Selected Compensation: Total Pay',
-                    id = 'compensation-accordion-item'
-                ),
-                dbc.AccordionItem(
-                    children = [
-                        job_container,
-                    ],
-                    title = 'Compare Jobs',
-                    id = 'compare-jobs-accordion-item'
-                ),
-                dbc.AccordionItem(
-                    children = [
-                        dcc.Loading(
-                                id = 'name-container',
-                                children = [
-                                    name_search_container,
-                                    name_search_results_container,
-                                    name_add_container
-                                ]
-                              
-                        ),
-                    ],
-                    title = 'Compare Employees'
-                )
-            ],
-            id = 'top-accordion',
-            always_open = True,
-            active_item = ['item-1', 'item-2']    # this needs to be string id (not assigned id, which starts at 0)
-        ),
-        html.Hr(),
-        html.H4('How does your compensation stack up against other UC employees?'),
-        html.H6('Hover around a data point to compare the compensation of all plotted employees for that year.'),
-        dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
-        html.Hr(),
-        dbc.Accordion(
-            children=[
-                dbc.AccordionItem(
-                    children = [
-                        initial_wage_container,
-                    ],
-                    title = 'Starting Compensation',
-                    id = 'starting-compensation-accordion-item'
-                ),
-                dbc.AccordionItem(
-                    children = [
-                        year_range_container,
-                    ],
-                    title = 'Year Range',
-                    id = 'year-range-accordion-item'
-                ),
-            ],
-            always_open = True,
-            active_item = ['item-0', 'item-1'],    # this needs to be string id (not assigned id, which starts at 0)
-            id = 'bottom-accordion'
-        ),
-        html.Hr(),
-        html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
-        html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years.'),
-        dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
-        html.Hr(),
-        html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
-        dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.**"),
-        dcc.Markdown("**This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
-        dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
-        dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
+            dbc.Accordion(
+                children = [
+                    dbc.AccordionItem(
+                        children = [
+                            html.P('Select one of the following options:'),
+                            dcc.Dropdown(
+                                options = ['Total Pay & Benefits', 'Total Pay'],
+                                value = 'Total Pay',
+                                multi=False,
+                                clearable = False,
+                                id = 'select-compensation-dropdown'
+                            ),
+                            dbc.Button('Refresh Figures', id = 'refresh-figures-button', className='button'),
+                        ],
+                        title = 'Selected Compensation: Total Pay',
+                        id = 'compensation-accordion-item'
+                    ),
+                    dbc.AccordionItem(
+                        children = [
+                            job_container,
+                        ],
+                        title = 'Compare Jobs',
+                        id = 'compare-jobs-accordion-item'
+                    ),
+                    dbc.AccordionItem(
+                        children = [
+                            dcc.Loading(
+                                    id = 'name-container',
+                                    children = [
+                                        name_search_container,
+                                        name_search_results_container,
+                                        name_add_container
+                                    ]
+                                
+                            ),
+                        ],
+                        title = 'Compare Employees'
+                    )
+                ],
+                id = 'top-accordion',
+                always_open = True,
+                active_item = ['item-1', 'item-2']    # this needs to be string id (not assigned id, which starts at 0)
+            ),
+            html.Hr(),
+            html.H4('How does your compensation stack up against other UC employees?'),
+            html.H6('Hover around a data point to compare the compensation of all plotted employees for that year.'),
+            dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
+            html.Hr(),
+            dbc.Accordion(
+                children=[
+                    dbc.AccordionItem(
+                        children = [
+                            initial_wage_container,
+                        ],
+                        title = 'Starting Compensation',
+                        id = 'starting-compensation-accordion-item'
+                    ),
+                    dbc.AccordionItem(
+                        children = [
+                            year_range_container,
+                        ],
+                        title = 'Year Range',
+                        id = 'year-range-accordion-item'
+                    ),
+                ],
+                always_open = True,
+                active_item = ['item-0', 'item-1'],    # this needs to be string id (not assigned id, which starts at 0)
+                id = 'bottom-accordion'
+            ),
+            html.Hr(),
+            html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
+            html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years.'),
+            dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
+            html.Hr(),
+            html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
+            dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.**"),
+            dcc.Markdown("**This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
+            dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
+            dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
 
-        dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
-        html.Hr(),
-        dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
-        dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
-        dbc.Modal(
-            children = [
-                dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
-                dbc.ModalBody(
-                    children = [
-                        dcc.Markdown("Welcome!"),
-                        dcc.Markdown("In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation."),
-                        dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I continue to make improvements.")
-                    ]
-                ),
-                dbc.ModalFooter(
-                    dbc.Button("Close", id="close-modal-button")
-                ),
-            ],
-            is_open=True,
-            id='landing-modal',
-            centered=True
+            dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
+            html.Hr(),
+            dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
+            dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
+            dbc.Modal(
+                children = [
+                    dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
+                    dbc.ModalBody(
+                        children = [
+                            dcc.Markdown("Welcome!"),
+                            dcc.Markdown("In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation."),
+                            dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I continue to make improvements.")
+                        ]
+                    ),
+                    dbc.ModalFooter(
+                        dbc.Button("Close", id="close-modal-button")
+                    ),
+                ],
+                is_open=True,
+                id='landing-modal',
+                centered=True
 
-        )
+            )
+        ]
+    )
     ]
 )
 

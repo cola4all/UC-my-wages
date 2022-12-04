@@ -156,6 +156,10 @@ hr {
 }
 
 .app-div {
+    padding: 0px;
+}
+
+.content-div {
     padding: 10px;
 }
 
