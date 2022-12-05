@@ -12,37 +12,6 @@ app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_sty
 server = app.server
 
 app.title = "UC Employee Wages Dashboard"
-app.index_string = '''
-<!DOCTYPE html>
-<html>
-    <head>
-        {%metas%}
-        <title>UC My Wages</title>        
-        {%favicon%}
-        {%css%}        
-        
-        <link href="https://cdn.jsdelivr.net/npm/shareon@1/dist/shareon.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/shareon@1/dist/shareon.min.js" type="text/javascript"></script>
-        
-    </head>
-    <body>              
-        {%app_entry%}
-        <footer>
-            {%config%}
-            {%scripts%}
-            {%renderer%}           
-        </footer>  
-        <div style="overflow:hidden;width:40%;margin:0;padding-top:0;background-color:#edeff1">
-            <div class="shareon" style="overflow:hidden;width:600px;margin:0.5rem;text-align:left">  
-                <h4 style="font-size:1.25rem;background:#edeff1;color:#000000;text-align:left"> #UCMyWages </h4>
-                <a class="twitter" data-url="https://twitter.com/collthinking420" data-title="collective thinking"></a>
-            </div>
-        </div>    
-
-        
-    </body>
-</html>
-'''
 
 # define paths
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
@@ -380,7 +349,7 @@ app.layout = html.Div(
             dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
             dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
             html.Hr(),
-
+            dcc.Markdown('''##### **Share you results at [#UCMyWages](https://twitter.com/search?q=UCMyWages&src=typeahead_click&f=top) and [#FairUCNow](https://twitter.com/search?q=fairucnow&src=typed_query)**'''),
             dbc.Modal(
                 children = [
                     dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
