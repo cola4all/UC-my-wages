@@ -67,22 +67,20 @@ print('reading csv 1:')
 
 # load data
 #df_jobs = pd.read_parquet(JOB_DATA_PATH, engine='fastparquet')     # need to create parquet file first
-cat_type = pd.api.types.CategoricalDtype(categories=[2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021], ordered=True)
+cat_type_year = pd.api.types.CategoricalDtype(categories=[2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021], ordered=True)
 df_jobs = pd.read_csv(JOB_DATA_PATH, 
     usecols=[
         DataSchema.NAME,
         DataSchema.TOTAL_PAY,
         DataSchema.TOTAL_PAY_AND_BENEFITS,
-        DataSchema.YEAR],
+        DataSchema.YEAR],         # this col is used for sorting by names
     dtype={
         DataSchema.NAME: "category",
         DataSchema.TOTAL_PAY: float,
         DataSchema.TOTAL_PAY_AND_BENEFITS: float,
-        DataSchema.YEAR: cat_type
+        DataSchema.YEAR: cat_type_year
     }
 )
-# rename the compensation column (either Total Pay or Total Pay and Benefits) to compensation
-#df_jobs = df_jobs.rename(columns={compensation_type: DataSchema.PAY})
 print(time.time() - t0)
 
 t0 = time.time()
@@ -119,7 +117,8 @@ t0 = time.time()
 print('creating html components:')
 # ------------- create html components --------------------
 # better way to do this? this is faster than reading a df
-unique_jobs = ['GSR (Step 1)', 'GSR (Step 2)', 'GSR (Step 3)', 'GSR (Step 4)', 'GSR (Step 5)', 'GSR (Step 6)', 'GSR (Step 7)', 'GSR (Step 8)', 'GSR (Step 9)', 'GSR (Step 10)', 'UC President']        
+unique_jobs = df_jobs['Employee Name'].unique().tolist()
+
 initial_wage_container = html.Div(
         id = ids.INITIAL_WAGE_CONTAINER,
         className = 'dropdown-container',
@@ -150,7 +149,7 @@ job_container = html.Div(
         dcc.Dropdown(
             id=ids.RATE_JOB_DROPDOWN,
             options=unique_jobs,
-            value=['GSR (Step 1)', 'GSR (Step 4)', 'GSR (Step 7)', 'GSR (Step 10)'],
+            value=['GSR (Step 1)', 'GSR (Step 4)', 'GSR (Step 7)', 'GSR (Step 10)', 'Teaching Assistant', 'Teaching Associate', 'Teaching Fellow'],
             multi=True
         )
     ]
