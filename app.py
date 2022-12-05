@@ -331,8 +331,7 @@ app.layout = html.Div(
             dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
             html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
-            dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.**"),
-            dcc.Markdown("**This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
+            dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.** This means that our raises are tied to our initial salary. For high-income earners, that's great - only a small percent raise is needed to generate a large boost in income in absolute dollar terms. **But this system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
             dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
             dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
 
