@@ -32,10 +32,15 @@ app.index_string = '''
             {%scripts%}
             {%renderer%}           
         </footer>  
-                
+        <div style="overflow:hidden;width:40%;margin:0;padding-top:0;background-color:#edeff1">
+            <div class="shareon" style="overflow:hidden;width:600px;margin:0.5rem;text-align:left">  
+                <h4 style="font-size:1.25rem;background:#edeff1;color:#000000;text-align:left"> #UCMyWages </h4>
+                <a class="twitter" data-url="https://twitter.com/collthinking420" data-title="collective thinking"></a>
+            </div>
+        </div>    
 
         
-        </body>
+    </body>
 </html>
 '''
 
@@ -331,7 +336,7 @@ app.layout = html.Div(
             dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
             html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
-            html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years. Simply set a starting compensation below. Note that if an employee that you added is missing from the plot, you may need to adjust the year range such that the employee has data spanning the minimum year and maximum year.'),
+            html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees. *Simply set your starting compensation below. You may also need to adjust the year range slider (this rescales the x-axis) to fit the range of years for which the employee has data.*'),
             dbc.Accordion(
                 children=[
                     dbc.AccordionItem(
@@ -364,8 +369,18 @@ app.layout = html.Div(
             dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
             dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
             html.Hr(),
+
+            dcc.Markdown("Although this project is an active work in progress, releasing it to the public in its current state is important because of its relevance to the ongoing labor dispute between the UC and its 48,000 Academic Workers. It is our hope that this project helps the UC bring about its touted commitment to [Accountability and Transparency](https://ucannualwage.ucop.edu/wage/). "),
+            dcc.Markdown("Please [DM us on twitter](https://twitter.com/collthinking420) if you wish report any bugs or feature requests."),
+
+            dcc.Markdown("Note that there is a current limitation when searching for a name that matches multiple employees for a given year. Currently, the plot displays the aggregate of all employees with that name. A future implementation will separate employees with shared names."),
+            
+            html.Hr(),
+            html.H4('Data Sources'),
             dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
             dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
+            html.Hr(),
+
             dbc.Modal(
                 children = [
                     dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
