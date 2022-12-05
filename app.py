@@ -465,6 +465,8 @@ def search_names(n_clicks, search_name, dff_names):
             dash_table.DataTable(
                 data = table_data_records_list, 
                 columns = [{"name": DataSchema.NAME, "id": DataSchema.NAME}, {"name": 'Years Available', "id": 'Years Available'}],
+                active_cell = {'column': 0, 'row': 0},
+                selected_cells = [{'column': 0, 'row': 0}],
                 id = ids.NAME_SEARCH_RESULTS_TABLE
             )
         ]
@@ -522,6 +524,60 @@ def update_initial_wage_input(dropdown_value, input_value, years, df_jobs):
 
     return dropdown_value, input_value
 
+# #------------- callback - filtered-names-data -----------------
+# # triggered (1) when name is added/dropped or (2) year range slider is moved (3) initial creation of data store
+# # filters by names detected in dropdown menu and year range
+# @app.callback(
+#     ServersideOutput('filtered-names-data', 'data'),
+#     Input(ids.NAME_ADDED_DROPDOWN, "value"),
+#     Input('names-data','data'),
+#     Input('refresh-figures-button', 'n_clicks')
+#     #Input('compensation-accordion-item','title'),       # why?
+#     prevent_initial_call = True
+# )
+# def filter_names_data(names, df_names, n_clicks):
+#     if (names is None) or (names == []):
+#         raise PreventUpdate
+
+#     # IMPORTANT when dealing with categories (cat.remove_unused_categories)
+#     print('in filter_names_data:')
+#     t0 = time.time()
+#     logical_array = (df_names[DataSchema.NAME].isin(names))
+#     df_names_filtered = df_names.loc[logical_array, [DataSchema.PAY, DataSchema.YEAR]]
+#     df_names_filtered = df_names_filtered.merge(df_names.loc[(df_names[DataSchema.NAME].isin(names)),DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
+#     print(time.time() - t0)
+
+
+#     return df_names_filtered
+
+# #------------- callback - filtered-jobs-data -----------------
+# # triggered (1) when name is added/dropped or (2) year range slider is moved
+# # filters by jobs detected in dropdown menu and year range
+# # prevent_initial_call is false because we want this to be updated ast startup
+# @app.callback(
+#     ServersideOutput('filtered-jobs-data', 'data'),
+#     Input(ids.RATE_JOB_DROPDOWN, "value"),
+#     Input('jobs-data','data'),
+#     Input('refresh-figures-button', 'n_clicks'),
+#     #Input('compensation-accordion-item','title'),
+#     prevent_initial_call = True
+# )
+# def filter_jobs_data(jobs, df_jobs, n_clicks):
+#     if jobs is None:
+#         raise PreventUpdate
+
+#     # IMPORTANT for mem usage when dealing with categories (cat.remove_unused_categories)
+#     print('in filter_jobs_data:')
+#     t0 = time.time()
+#     logical_array = (df_jobs[DataSchema.NAME].isin(jobs)) 
+#     df_jobs_filtered = df_jobs.loc[logical_array, [DataSchema.PAY, DataSchema.YEAR]]
+#     df_jobs_filtered = df_jobs_filtered.merge(df_jobs.loc[logical_array, DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
+#     print(time.time() - t0)
+#     print('size of df_jobs_filtered:')
+#     print(df_jobs_filtered.info(memory_usage = 'deep'))
+    
+#     return df_jobs_filtered
+
 #------------- callback - filtered-names-data -----------------
 # triggered (1) when name is added/dropped or (2) year range slider is moved (3) initial creation of data store
 # filters by names detected in dropdown menu and year range
@@ -529,11 +585,11 @@ def update_initial_wage_input(dropdown_value, input_value, years, df_jobs):
     ServersideOutput('filtered-names-data', 'data'),
     Input(ids.NAME_ADDED_DROPDOWN, "value"),
     Input('names-data','data'),
-    Input('compensation-accordion-item','title'),
+    Input('compensation-accordion-item','title'),       # why?
     prevent_initial_call = True
 )
 def filter_names_data(names, df_names, title):
-    if (names is None) or (names == []):
+    if (names is None):
         raise PreventUpdate
 
     # IMPORTANT when dealing with categories (cat.remove_unused_categories)
@@ -554,11 +610,13 @@ def filter_names_data(names, df_names, title):
 @app.callback(
     ServersideOutput('filtered-jobs-data', 'data'),
     Input(ids.RATE_JOB_DROPDOWN, "value"),
-    Input('jobs-data','data'),
-    Input('compensation-accordion-item','title'),
+    Input('filtered-names-data','data'),            # filtered names data triggers this chained callback
+    #Input('refresh-figures-button', 'n_clicks'),
+    State('jobs-data','data'),
+    #Input('compensation-accordion-item','title'),
     prevent_initial_call = True
 )
-def filter_jobs_data(jobs, df_jobs, title):
+def filter_jobs_data(jobs, df_names_filtered, df_jobs):
     if jobs is None:
         raise PreventUpdate
 
@@ -572,6 +630,10 @@ def filter_jobs_data(jobs, df_jobs, title):
     print('size of df_jobs_filtered:')
     print(df_jobs_filtered.info(memory_usage = 'deep'))
     
+    
+    # combine
+    df_jobs_filtered= pd.concat([df_jobs_filtered, df_names_filtered]).astype({DataSchema.NAME: "category"})
+
     return df_jobs_filtered
 
 #------------- callback - filtered-combined-data -----------------
@@ -581,16 +643,17 @@ def filter_jobs_data(jobs, df_jobs, title):
 @app.callback(
     ServersideOutput('filtered-combined-data', 'data'),
     Input('filtered-jobs-data','data'),
-    Input('filtered-names-data','data'),
+    #Input('filtered-names-data','data'),
     Input(ids.YEAR_RANGE_SLIDER, 'value'),
     prevent_initial_call = True
 )
-def filter_combined_data(df_jobs_filtered, df_names_filtered, years):
+def filter_combined_data(df_jobs_filtered, years):
     min_year = years[0]
     max_year = years[1]
 
-    # combine
-    df_combined = pd.concat([df_jobs_filtered, df_names_filtered]).astype({DataSchema.NAME: "category"})
+    # # combine
+    # df_combined = pd.concat([df_jobs_filtered, df_names_filtered]).astype({DataSchema.NAME: "category"})
+    df_combined = df_jobs_filtered
 
     # filter out unused years
     logical_array = (df_combined[DataSchema.YEAR] >= min_year) & (df_combined[DataSchema.YEAR] <= max_year)
@@ -599,11 +662,14 @@ def filter_combined_data(df_jobs_filtered, df_names_filtered, years):
     
     # handle duplicates (same year and name)
     # TODO: handle "duplicates" with common names
-    df_duplicates = df_combined_filtered[df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False)]                 # grab all duplicates (names and year)
+    df_duplicates = df_combined_filtered.loc[df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False), [DataSchema.PAY, DataSchema.YEAR]]                 # grab all duplicates (names and year)
     if len(df_duplicates) > 0:
+        df_duplicates = df_duplicates.merge(df_combined_filtered.loc[df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False), DataSchema.NAME].cat.remove_unused_categories(), left_index=True, right_index=True)
         df_duplicates = df_duplicates.groupby([DataSchema.YEAR, DataSchema.NAME])[DataSchema.PAY].sum().reset_index()       # add duplicates together
-    df_combined_filtered = df_combined_filtered[~df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False)]                  # delete duplciates from dff_combined
-    df_combined_filtered = pd.concat([df_combined_filtered, df_duplicates])                                                               # concatenate together
+        df_duplicates = df_duplicates[df_duplicates[DataSchema.PAY] != 0]      # drop some rows with no values
+        df_combined_filtered = df_combined_filtered[~df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False)]                  # delete duplciates from dff_combined
+        df_combined_filtered = pd.concat([df_combined_filtered, df_duplicates])                                                               # concatenate together
+        df_combined_filtered = df_combined_filtered.sort_values(by=[DataSchema.NAME, DataSchema.YEAR], ascending=True)
 
     return df_combined_filtered
 
@@ -683,7 +749,7 @@ def reset_figures():
         Output(ids.LOLLIPOP_CHART, "figure"),
         Input(ids.INITIAL_WAGE_INPUT, "value"),
         Input('filtered-combined-data', 'data'),
-        Input('refresh-figures-button','n_clicks'),
+        Input('refresh-figures-button', 'n_clicks'),
         State(ids.YEAR_RANGE_SLIDER, 'value'),
         State('traces-in-real-wages','data'),
         State('traces-in-projected-wages','data'),
