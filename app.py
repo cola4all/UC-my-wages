@@ -12,6 +12,32 @@ app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_sty
 server = app.server
 
 app.title = "UC Employee Wages Dashboard"
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>{%title%}</title>        
+        {%favicon%}
+        {%css%}        
+        
+        <link href="https://cdn.jsdelivr.net/npm/shareon@1/dist/shareon.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/shareon@1/dist/shareon.min.js" type="text/javascript"></script>
+        
+    </head>
+    <body>              
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}           
+        </footer>  
+                
+
+        
+        </body>
+</html>
+'''
 
 # define paths
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
@@ -23,7 +49,7 @@ class DataSchema:
     JOB_ABBREVIATED = "Abbreviated Job Title"
     TOTAL_PAY = 'Total Pay'
     TOTAL_PAY_AND_BENEFITS = 'Total Pay & Benefits'
-    PAY = 'Total Pay'       # this is the default option for PAY
+    #PAY = 'Total Pay'       # this is the default option for PAY
     YEAR = "Year"
     PRIORPAY = "Prior Year Pay"
     ADJUSTMENT = "Adjustment"
@@ -53,7 +79,7 @@ class ids:
     INITIAL_WAGE_CONTAINER = 'initial-wage-container'
 
 class colors:
-    PLOT_BACKGROUND_COLOR = "#eaf1f5"
+    PLOT_BACKGROUND_COLOR = "#edeff1"
     END_MARKER_COLOR = "#355218"
     START_MARKER_COLOR = "#759356"
     LOLLIPOP_LINE_COLOR = "#7B7B7B"
@@ -254,7 +280,7 @@ app.layout = html.Div(
             dcc.Store(id='table-data-records-list'),
             dcc.Store(id='traces-in-real-wages'),
             dcc.Store(id='traces-in-projected-wages'),
-            dcc.Store(id='schema-class'),
+            dcc.Store(id='compensation-type-store'),
 
             dbc.Accordion(
                 children = [
@@ -331,10 +357,9 @@ app.layout = html.Div(
             dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
             html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
-            dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.** This means that our raises are tied to our initial salary. For high-income earners, that's great - only a small percent raise is needed to generate a large boost in income in absolute dollar terms. **But this system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
+            dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
             dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
             dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
-
             dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
             html.Hr(),
             dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
@@ -367,31 +392,35 @@ print(time.time() - t0)
 #--------------- callback - dropdown -------
 # also - dsiable/enable refresh plot
 @app.callback(
+    ServersideOutput('compensation-type-store', 'data'),
     Output('compensation-accordion-item','title'),
     Input('select-compensation-dropdown','value'),
     prevent_initial_call = True,       # want to load in background
 )
 def save_datastore(compensation_type):
+
     compensation_type = ''.join(compensation_type)        # coerce a list to string
     
     if compensation_type is None:
         raise PreventUpdate
 
-    DataSchema.PAY = compensation_type      # bad: changing global variable - another way?
+    #DataSchema.PAY = compensation_type      # bad: changing global variable interferes if two instances are run on one server
         
     title = 'Type of Compensation: ' + compensation_type
 
-    return title
+    return compensation_type, title
 
 #--------------- callback - close modal -------
 # triggered by pressing the close button
 @app.callback(
+    Output('select-compensation-dropdown', 'value'),
     Output("landing-modal", "is_open"),
     Input("close-modal-button", "n_clicks"),
     prevent_initial_call = True
 )
 def close_modal(n_clicks): 
-    return False
+    COMPENSATION_TYPE = 'Total Pay'     # sets default COMPENSATION_TYPE here
+    return COMPENSATION_TYPE, False
 
 # ------------- callback - save_datastore ----------------------
 # triggered by landing modal changing
@@ -501,9 +530,10 @@ def add_name_to_dropdown(n_clicks, active_cell, data, value, options):
     Input(ids.INITIAL_WAGE_INPUT, "value"),
     Input(ids.YEAR_RANGE_SLIDER, 'value'),
     State('jobs-data','data'),
+    State('compensation-type-store','data'),
     prevent_initial_call=True
 )
-def update_initial_wage_input(dropdown_value, input_value, years, df_jobs):
+def update_initial_wage_input(dropdown_value, input_value, years, df_jobs, COMPENSATION_TYPE):
     min_year = years[0]
 
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -512,7 +542,7 @@ def update_initial_wage_input(dropdown_value, input_value, years, df_jobs):
         # if callback was triggered by user selecting from the dropdown menu, find the selected initial wage to display in the input field
         logical_array = (df_jobs[DataSchema.YEAR] == min_year) & (df_jobs[DataSchema.NAME] == dropdown_value)  # need to handle if more than 1 match
         if sum(logical_array) == 1: 
-            input_value = df_jobs.loc[logical_array,DataSchema.PAY].iloc[0]  
+            input_value = df_jobs.loc[logical_array, COMPENSATION_TYPE].iloc[0]  
         else:
             input_value = "" # default value if no string matches
 
@@ -585,9 +615,10 @@ def update_initial_wage_input(dropdown_value, input_value, years, df_jobs):
     Input(ids.NAME_ADDED_DROPDOWN, "value"),
     Input('names-data','data'),
     Input('compensation-accordion-item','title'),       # why?
+    State('compensation-type-store', 'data'),
     prevent_initial_call = True
 )
-def filter_names_data(names, df_names, title):
+def filter_names_data(names, df_names, title, COMPENSATION_TYPE):
     if (names is None):
         raise PreventUpdate
 
@@ -595,7 +626,7 @@ def filter_names_data(names, df_names, title):
     print('in filter_names_data:')
     t0 = time.time()
     logical_array = (df_names[DataSchema.NAME].isin(names))
-    df_names_filtered = df_names.loc[logical_array, [DataSchema.PAY, DataSchema.YEAR]]
+    df_names_filtered = df_names.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR]]
     df_names_filtered = df_names_filtered.merge(df_names.loc[(df_names[DataSchema.NAME].isin(names)),DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
     print(time.time() - t0)
 
@@ -612,10 +643,11 @@ def filter_names_data(names, df_names, title):
     Input('filtered-names-data','data'),            # filtered names data triggers this chained callback
     #Input('refresh-figures-button', 'n_clicks'),
     State('jobs-data','data'),
+    State('compensation-type-store', 'data'),
     #Input('compensation-accordion-item','title'),
     prevent_initial_call = True
 )
-def filter_jobs_data(jobs, df_names_filtered, df_jobs):
+def filter_jobs_data(jobs, df_names_filtered, df_jobs, COMPENSATION_TYPE):
     if jobs is None:
         raise PreventUpdate
 
@@ -623,7 +655,7 @@ def filter_jobs_data(jobs, df_names_filtered, df_jobs):
     print('in filter_jobs_data:')
     t0 = time.time()
     logical_array = (df_jobs[DataSchema.NAME].isin(jobs)) 
-    df_jobs_filtered = df_jobs.loc[logical_array, [DataSchema.PAY, DataSchema.YEAR]]
+    df_jobs_filtered = df_jobs.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR]]
     df_jobs_filtered = df_jobs_filtered.merge(df_jobs.loc[logical_array, DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
     print(time.time() - t0)
     print('size of df_jobs_filtered:')
@@ -644,9 +676,10 @@ def filter_jobs_data(jobs, df_names_filtered, df_jobs):
     Input('filtered-jobs-data','data'),
     #Input('filtered-names-data','data'),
     Input(ids.YEAR_RANGE_SLIDER, 'value'),
+    State('compensation-type-store', 'data'),
     prevent_initial_call = True
 )
-def filter_combined_data(df_jobs_filtered, years):
+def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE):
     min_year = years[0]
     max_year = years[1]
 
@@ -656,16 +689,16 @@ def filter_combined_data(df_jobs_filtered, years):
 
     # filter out unused years
     logical_array = (df_combined[DataSchema.YEAR] >= min_year) & (df_combined[DataSchema.YEAR] <= max_year)
-    df_combined_filtered = df_combined.loc[logical_array, [DataSchema.PAY, DataSchema.YEAR]]
+    df_combined_filtered = df_combined.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR]]
     df_combined_filtered = df_combined_filtered.merge(df_combined.loc[logical_array, DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
     
     # handle duplicates (same year and name)
     # TODO: handle "duplicates" with common names
-    df_duplicates = df_combined_filtered.loc[df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False), [DataSchema.PAY, DataSchema.YEAR]]                 # grab all duplicates (names and year)
+    df_duplicates = df_combined_filtered.loc[df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False), [COMPENSATION_TYPE, DataSchema.YEAR]]                 # grab all duplicates (names and year)
     if len(df_duplicates) > 0:
         df_duplicates = df_duplicates.merge(df_combined_filtered.loc[df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False), DataSchema.NAME].cat.remove_unused_categories(), left_index=True, right_index=True)
-        df_duplicates = df_duplicates.groupby([DataSchema.YEAR, DataSchema.NAME])[DataSchema.PAY].sum().reset_index()       # add duplicates together
-        df_duplicates = df_duplicates[df_duplicates[DataSchema.PAY] != 0]      # drop some rows with no values
+        df_duplicates = df_duplicates.groupby([DataSchema.YEAR, DataSchema.NAME])[COMPENSATION_TYPE].sum().reset_index()       # add duplicates together
+        df_duplicates = df_duplicates[df_duplicates[COMPENSATION_TYPE] != 0]      # drop some rows with no values
         df_combined_filtered = df_combined_filtered[~df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False)]                  # delete duplciates from dff_combined
         df_combined_filtered = pd.concat([df_combined_filtered, df_duplicates])                                                               # concatenate together
         df_combined_filtered = df_combined_filtered.sort_values(by=[DataSchema.NAME, DataSchema.YEAR], ascending=True)
@@ -754,10 +787,11 @@ def reset_figures():
         State('traces-in-projected-wages','data'),
         State(ids.PROJECTED_WAGES_LINE_PLOT, "figure"),
         State(ids.REAL_WAGES_LINE_PLOT, "figure"),
+        State('compensation-type-store', 'data'),
         prevent_initial_call = True,
         blocking = True
 )
-def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages):
+def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, COMPENSATION_TYPE):
     min_year = years[0]
     max_year = years[1]
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -805,7 +839,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
     for name in names_2add_real_wages:
         logical_array = df_combined_filtered.loc[:,DataSchema.NAME] == name
         x_var = df_combined_filtered.loc[logical_array,DataSchema.YEAR]
-        y_var = df_combined_filtered.loc[logical_array,DataSchema.PAY]
+        y_var = df_combined_filtered.loc[logical_array,COMPENSATION_TYPE]
 
         fig_real_wages.add_trace(go.Scatter(x = x_var, y = y_var, name = name, hovertemplate = '$%{y}'))
         fig_real_wage_indices.append(len(fig_real_wages.data) - 1)     
@@ -834,8 +868,8 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
     for name in names_2add_projected_wages:
         logical_array = df_combined_filtered.loc[:,DataSchema.NAME] == name
         
-        pay = df_combined_filtered.loc[logical_array,DataSchema.PAY].to_numpy()
-        priorpay = df_combined_filtered.loc[logical_array,DataSchema.PAY].shift(1).to_numpy()
+        pay = df_combined_filtered.loc[logical_array,COMPENSATION_TYPE].to_numpy()
+        priorpay = df_combined_filtered.loc[logical_array,COMPENSATION_TYPE].shift(1).to_numpy()
         priorpay[0] = pay[0]
         adjustment = (pay - priorpay)/priorpay + 1
         cumadjustment = pd.Series(adjustment).cumprod() 
@@ -853,7 +887,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
     # df lollipop needs to be reset every time because of sorting by largest to smallest
     df_lollipop = df_combined_filtered[df_combined_filtered[DataSchema.NAME].isin(names_wanted_in_projected_wages)]         # df lollipop uses the same wanted names as projected wages   
     if len(df_lollipop) > 0:
-        df_lollipop = df_lollipop.pivot(index=DataSchema.NAME, columns=DataSchema.YEAR, values=DataSchema.PAY).reset_index()
+        df_lollipop = df_lollipop.pivot(index=DataSchema.NAME, columns=DataSchema.YEAR, values=COMPENSATION_TYPE).reset_index()
         # sort by ascending wages
         df_lollipop = df_lollipop.sort_values(by=[max_year, min_year], ascending=True)
 
