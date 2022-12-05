@@ -17,7 +17,7 @@ app.index_string = '''
 <html>
     <head>
         {%metas%}
-        <title>{%title%}</title>        
+        <title>UC My Wages</title>        
         {%favicon%}
         {%css%}        
         
@@ -150,7 +150,7 @@ initial_wage_container = html.Div(
         id = ids.INITIAL_WAGE_CONTAINER,
         className = 'dropdown-container',
         children = [
-            html.P('Set a starting compensation by selecting a job or entering a custom amount:'),
+            dcc.Markdown('Set a starting compensation by selecting a job or entering a custom amount:', id = 'initial-wage-label'),
             dcc.Dropdown(
                 id=ids.INITIAL_WAGE_DROPDOWN,
                 options=unique_jobs,
@@ -330,6 +330,8 @@ app.layout = html.Div(
             html.H6('Hover around a data point to compare the compensation of all plotted employees for that year.'),
             dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
+            html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
+            html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years. Simply set a starting compensation below. Note that if an employee that you added is missing from the plot, you may need to adjust the year range such that the employee has data spanning the minimum year and maximum year.'),
             dbc.Accordion(
                 children=[
                     dbc.AccordionItem(
@@ -351,11 +353,11 @@ app.layout = html.Div(
                 active_item = ['item-0', 'item-1'],    # this needs to be string id (not assigned id, which starts at 0)
                 id = 'bottom-accordion'
             ),
-            html.Hr(),
-            html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
-            html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees over a specified range of years.'),
+
             dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
+
+
             html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
             dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
             dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),

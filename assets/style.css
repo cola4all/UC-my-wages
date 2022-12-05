@@ -48,13 +48,13 @@ hr {
 .button {
     border-radius: .3rem;
     border-style: solid;
-    border-color: #27489b;
-    background-color: #395d93;
+    border-color: #005581;
+    background-color: #005581;
     color: #edf3f2;
 }
 
-#landing-dialog {
-
+.accordion-button:not(.collapsed) {
+    background-color:#e4e4e4;
 }
 
 #name-container {
@@ -132,11 +132,7 @@ hr {
     background-color: #8fa6c9;
 }
 
-#initial-wage-label {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: end;
-}
+
 
 .rc-slider-mark {
     font-size: 1rem;
