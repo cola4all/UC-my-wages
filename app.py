@@ -8,10 +8,38 @@ import pandas as pd
 import os, pathlib
 import time
 
-app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_stylesheets=[dbc.themes.FLATLY], assets_folder='assets')
+app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_stylesheets=[dbc.themes.FLATLY], assets_folder='assets',
+        meta_tags=[{
+            'name': 'viewport',
+            'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'        
+        }]
+
+)   
 server = app.server
 
 app.title = "UC Employee Wages Dashboard"
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>UC My Wages</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+        <div>My Custom footer</div>
+        <script data-goatcounter="https://MYCODE.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+    </body>
+</html>
+'''
 
 # define paths
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
@@ -119,28 +147,28 @@ print('creating html components:')
 # better way to do this? this is faster than reading a df
 unique_jobs = df_jobs['Employee Name'].unique().tolist()
 
-initial_wage_container = html.Div(
-        id = ids.INITIAL_WAGE_CONTAINER,
-        className = 'dropdown-container',
-        children = [
-            dcc.Markdown('Set a starting compensation by selecting a job or entering a custom amount:', id = 'initial-wage-label'),
-            dcc.Dropdown(
-                id=ids.INITIAL_WAGE_DROPDOWN,
-                options=unique_jobs,
-                value = "GSR (Step 1)",
-                placeholder="Set an starting compensation based on job or enter custom value on the right",
-                multi=False,
-                clearable=False
-            ),
-            dcc.Input(
-                id=ids.INITIAL_WAGE_INPUT, 
-                value = 16698, #old code: value = df_jobs.loc[(df_jobs[DataSchema.NAME]=="GSR (Step 1)") & (df_jobs[DataSchema.YEAR]==2011), DataSchema.PAY].iloc[0],
-                type="number", 
-                placeholder="",
-                debounce=True
-            ),
-        ]
-)
+# initial_wage_container = html.Div(
+#         id = ids.INITIAL_WAGE_CONTAINER,
+#         className = 'dropdown-container',
+#         children = [
+#             html.P('Set a starting compensation by selecting a job or entering a custom amount:'),
+#             dcc.Dropdown(
+#                 id=ids.INITIAL_WAGE_DROPDOWN,
+#                 options=unique_jobs,
+#                 value = "GSR (Step 1)",
+#                 placeholder="Set an starting compensation based on job or enter custom value on the right",
+#                 multi=False,
+#                 clearable=False
+#             ),
+#             dcc.Input(
+#                 id=ids.INITIAL_WAGE_INPUT, 
+#                 value = 16698, #old code: value = df_jobs.loc[(df_jobs[DataSchema.NAME]=="GSR (Step 1)") & (df_jobs[DataSchema.YEAR]==2011), DataSchema.PAY].iloc[0],
+#                 type="number", 
+#                 placeholder="",
+#                 debounce=True
+#             ),
+#         ]
+# )
 
 job_container = html.Div(
     className="dropdown-container",
@@ -171,11 +199,7 @@ job_container = html.Div(
 
 
 # ------------- create year range slider components ----------------
-year_range_container = html.Div(
-    id = ids.YEAR_RANGE_CONTAINER,
-    className='dropdown-container',
-    children = [
-        dcc.RangeSlider(
+year_range_slider = dcc.RangeSlider(
             min = 2011, 
             max = 2021, 
             step = 1,
@@ -195,8 +219,6 @@ year_range_container = html.Div(
             },
             id = ids.YEAR_RANGE_SLIDER
         )
-    ]
-)
 
 
 # ------------- create name search components ----------------
@@ -301,24 +323,39 @@ app.layout = html.Div(
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             html.H6('Hover around a data point to compare the compensation of all plotted employees for that year. Use the options above to add or remove employees by name or position.'),
-            dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
+            dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}, figure={'layout': {'autosize': True, 'fillframe': True}}),
             html.Hr(),
             html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
-            html.H6('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees. *Simply set your starting compensation below. You may also need to adjust the year range slider (this rescales the x-axis) to fit the range of years for which the employee has data.*'),
+            dcc.Markdown('This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees. *Simply set your starting compensation below. You may also need to adjust the year range slider (this rescales the x-axis) to fit the range of years for which the employee has data.*'),
             dbc.Accordion(
                 children=[
                     dbc.AccordionItem(
                         children = [
-                            initial_wage_container,
+                            html.P('Set a starting compensation by selecting a job or entering a custom amount:'),
+                            dcc.Dropdown(
+                                id=ids.INITIAL_WAGE_DROPDOWN,
+                                options=unique_jobs,
+                                value = "GSR (Step 1)",
+                                placeholder="Set an starting compensation based on job or enter custom value on the right",
+                                multi=False,
+                                clearable=False
+                            ),
+                            dcc.Input(
+                                id=ids.INITIAL_WAGE_INPUT, 
+                                value = 16698, #old code: value = df_jobs.loc[(df_jobs[DataSchema.NAME]=="GSR (Step 1)") & (df_jobs[DataSchema.YEAR]==2011), DataSchema.PAY].iloc[0],
+                                type="number", 
+                                placeholder="",
+                                debounce=True
+                            ),
                         ],
                         title = 'Starting Compensation',
-                        id = 'starting-compensation-accordion-item'
+                        id = 'initial-wage-accordion-item'
                     ),
                     dbc.AccordionItem(
                         children = [
-                            year_range_container,
+                            year_range_slider,
                         ],
-                        title = 'Year Range',
+                        title = 'Year Range: 2011-2021',
                         id = 'year-range-accordion-item'
                     ),
                 ],
@@ -326,7 +363,6 @@ app.layout = html.Div(
                 active_item = ['item-0', 'item-1'],    # this needs to be string id (not assigned id, which starts at 0)
                 id = 'bottom-accordion'
             ),
-
             dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
 
@@ -335,12 +371,12 @@ app.layout = html.Div(
             dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
             dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
             dcc.Markdown("*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"),
+            html.H5('Years: 2011-2021', id='lollipop-chart-title'),
             dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
             html.Hr(),
 
             dcc.Markdown("Although this project is an active work in progress, releasing it to the public in its current state is important because of its relevance to the ongoing labor dispute between the UC and its 48,000 Academic Workers. It is our hope that this project helps the UC bring about its touted commitment to [Accountability and Transparency](https://ucannualwage.ucop.edu/wage/). "),
             dcc.Markdown("Please [DM us on twitter](https://twitter.com/collthinking420) if you wish report any bugs or feature requests."),
-
             dcc.Markdown("Note that there is a current limitation when searching for a name that matches multiple employees for a given year. Currently, the plot displays the aggregate of all employees with that name. A future implementation will separate employees with shared names."),
             
             html.Hr(),
@@ -348,7 +384,7 @@ app.layout = html.Div(
             dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
             dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
             html.Hr(),
-            dcc.Markdown('''##### **Share you results at [#UCMyWages](https://twitter.com/search?q=UCMyWages&src=typeahead_click&f=top) and [#FairUCNow](https://twitter.com/search?q=fairucnow&src=typed_query)**'''),
+            dcc.Markdown('''##### **[#UCMyWages](https://twitter.com/search?q=UCMyWages&src=typeahead_click&f=top)**'''),
             dbc.Modal(
                 children = [
                     dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
@@ -511,14 +547,16 @@ def add_name_to_dropdown(n_clicks, active_cell, data, value, options):
 @app.callback(
     Output(ids.INITIAL_WAGE_DROPDOWN, "value"),
     Output(ids.INITIAL_WAGE_INPUT, "value"),
+    Output('initial-wage-accordion-item', 'title'),
     Input(ids.INITIAL_WAGE_DROPDOWN, "value"),
     Input(ids.INITIAL_WAGE_INPUT, "value"),
     Input(ids.YEAR_RANGE_SLIDER, 'value'),
     State('jobs-data','data'),
     State('compensation-type-store','data'),
+    State('initial-wage-accordion-item',  'title'),
     prevent_initial_call=True
 )
-def update_initial_wage_input(dropdown_value, input_value, years, df_jobs, COMPENSATION_TYPE):
+def update_initial_wage_input(dropdown_value, input_value, years, df_jobs, COMPENSATION_TYPE, intial_wage_title):
     min_year = years[0]
 
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
@@ -536,7 +574,8 @@ def update_initial_wage_input(dropdown_value, input_value, years, df_jobs, COMPE
         dropdown_value = ""
         input_value = input_value
 
-    return dropdown_value, input_value
+    initial_wage_title = 'Starting Compensation: $' + str(input_value)
+    return dropdown_value, input_value, initial_wage_title
 
 # #------------- callback - filtered-names-data -----------------
 # # triggered (1) when name is added/dropped or (2) year range slider is moved (3) initial creation of data store
@@ -658,15 +697,21 @@ def filter_jobs_data(jobs, df_names_filtered, df_jobs, COMPENSATION_TYPE):
 # further processing by handling duplicates, 
 @app.callback(
     ServersideOutput('filtered-combined-data', 'data'),
+    Output('year-range-accordion-item','title'),
     Input('filtered-jobs-data','data'),
     #Input('filtered-names-data','data'),
     Input(ids.YEAR_RANGE_SLIDER, 'value'),
     State('compensation-type-store', 'data'),
+    State('year-range-accordion-item','title'),
     prevent_initial_call = True
 )
-def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE):
+def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE, year_range_accordion_title):
     min_year = years[0]
     max_year = years[1]
+
+    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    if trigger_id == ids.YEAR_RANGE_SLIDER:
+        year_range_accordion_title = 'Year Range: ' + str(min_year) + '-' + str(max_year)
 
     # # combine
     # df_combined = pd.concat([df_jobs_filtered, df_names_filtered]).astype({DataSchema.NAME: "category"})
@@ -688,7 +733,7 @@ def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE):
         df_combined_filtered = pd.concat([df_combined_filtered, df_duplicates])                                                               # concatenate together
         df_combined_filtered = df_combined_filtered.sort_values(by=[DataSchema.NAME, DataSchema.YEAR], ascending=True)
 
-    return df_combined_filtered
+    return df_combined_filtered, year_range_accordion_title
 
 # ----------------- function for resetting figures -----
 def reset_fig_lollipop():
@@ -704,7 +749,7 @@ def reset_fig_lollipop():
             title_x=0,
             yaxis=dict(linewidth=1, linecolor = "black", 
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
-                automargin = True,
+                automargin =True,
                 showline = False,
                 fixedrange = True
             ),
@@ -712,8 +757,11 @@ def reset_fig_lollipop():
                 title = dict(text = "Compensation (USD)"),
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 showline = True, linewidth=1, linecolor = "black",
-                fixedrange = True
-                )
+                fixedrange = True, automargin = True,
+                title_standoff = 15
+            ),
+            margin = dict(autoexpand = True, r=0, t=0, b=0, l=10)
+            
         )
     fig_lollipop.update_layout(template=lollipop_template)
     return fig_lollipop
@@ -734,13 +782,15 @@ def reset_figures():
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 automargin = True,
                 showline = True,
-                fixedrange = True),
+                fixedrange = True,
+                title_standoff = 20),
             xaxis=dict(zeroline = False,
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 showline = True, linewidth=1, linecolor = "black",
                 dtick = 1,
                 fixedrange = True
                 ),
+            margin = dict(autoexpand = True, r=0, t=0, b=40, l=40),
             hovermode="x"
         )
     fig_real_wages.update_layout(template=line_template, yaxis_title_text = "Compensation (USD)")
@@ -763,6 +813,7 @@ def reset_figures():
         Output(ids.PROJECTED_WAGES_LINE_PLOT, "figure"),
         Output(ids.REAL_WAGES_LINE_PLOT, "figure"),
         Output(ids.LOLLIPOP_CHART, "figure"),
+        Output('lollipop-chart-title','children'),
         Input(ids.INITIAL_WAGE_INPUT, "value"),
         Input('filtered-combined-data', 'data'),
         Input('refresh-figures-button', 'n_clicks'),
@@ -866,7 +917,8 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
         fig_projected_wage_indices.append(len(fig_projected_wages.data) - 1)     
 
     df_traces_in_projected_wages = pd.concat([df_traces_in_projected_wages, pd.DataFrame({DataSchema.NAME: names_2add_projected_wages, 'Index': fig_projected_wage_indices})]).astype({DataSchema.NAME: "category", "Index": int})     # update ledger
-    fig_projected_wages.update_layout(title="Only showing employees with data spanning the selected year range: " + str(min_year) + "-" + str(max_year))
+    projected_wages_chart_title = title="Years: " + str(min_year) + "-" + str(max_year)
+    #fig_projected_wages.update_layout(title="Only showing employees with data spanning the selected year range: " + str(min_year) + "-" + str(max_year))
 
     # create df_lollipop (pivot_wider the first and last years)
     # df lollipop needs to be reset every time because of sorting by largest to smallest
@@ -878,7 +930,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
 
         lollipop_x_start = df_lollipop[min_year].tolist()
         lollipop_x_end = df_lollipop[max_year].tolist()
-        lollipop_y = df_lollipop[DataSchema.NAME].tolist()
+        lollipop_y = df_lollipop[DataSchema.NAME].str.replace(' ','<br>', n=1).tolist()      # also add line break the first space to wrap text
 
         for i in range(0, len(lollipop_x_start)):
             fig_lollipop.add_trace(go.Scatter(
@@ -886,14 +938,14 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
                         y = [lollipop_y[i],lollipop_y[i]],
                         line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=3)))
 
-
+        lollipop_marker_size = 10
         fig_lollipop.add_trace(go.Scatter(
                         name=str(min_year) + " Compensation",
                         x=lollipop_x_start,
                         y=lollipop_y,
                         mode = "markers",
                         marker_symbol = "circle",
-                        marker_size = 15,
+                        marker_size = lollipop_marker_size,
                         marker_color=colors.START_MARKER_COLOR,
                     )
         )
@@ -903,13 +955,14 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
                         x=lollipop_x_end,
                         y=lollipop_y,
                         mode = "markers",
-                        marker_size = 15,
+                        marker_size = lollipop_marker_size,
                         marker_color=colors.END_MARKER_COLOR)
         )
 
-        fig_lollipop.update_layout(title="Only showing employees with data spanning the selected year range: " + str(min_year) + "-" + str(max_year))
+        lollipop_chart_title = title="Years: " + str(min_year) + "-" + str(max_year)
+        #fig_lollipop.update_layout(title="Compensation Growth From " + str(min_year) + "-" + str(max_year))
 
-    return df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop
+    return df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop, lollipop_chart_title
 
 
 

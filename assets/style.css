@@ -119,8 +119,7 @@ hr {
 }
 
 #year-range-slider {
-    grid-column: 1 / span 4;
-    grid-row: 2;
+    padding-bottom: 5rem;
 }
 
 #year-range-slider .rc-slider-track {
@@ -135,7 +134,8 @@ hr {
 
 
 .rc-slider-mark {
-    font-size: 1rem;
+    font-size: .9rem;
+    writing-mode: vertical-lr;
 }
 .rc-slider-mark-text {
     color: #1b232f;
@@ -197,3 +197,36 @@ hr {
         grid-template-columns: 1fr;
     }
 }
+
+.dash-graph {
+zoom: .85;
+}
+@media (min-width: 475px) {
+.dash-graph {
+    zoom: 0.9;
+}
+.rc-slider-mark {
+    font-size: 0.9rem;
+    writing-mode: vertical-lr;
+}
+}
+
+@media (min-width: 768px) {
+.dash-graph {
+    zoom: 0.95;
+}
+.rc-slider-mark {
+    font-size: 0.95rem;
+    writing-mode: vertical-lr;
+}
+}
+@media (min-width: 1024px) {
+.dash-graph {
+    zoom: 1;
+}
+.rc-slider-mark {
+    font-size: 1rem;
+    writing-mode: horizontal-tb;
+}
+}
+
