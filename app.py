@@ -34,7 +34,6 @@ app.index_string = '''
             {%scripts%}
             {%renderer%}
         </footer>
-        <div>My Custom footer</div>
         <script data-goatcounter="https://goatcounter-ekmk.onrender.com/count"
                 async src="//goatcounter-ekmk.onrender.com/count.js"></script>
     </body>

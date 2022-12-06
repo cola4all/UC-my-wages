@@ -199,11 +199,11 @@ hr {
 }
 
 .dash-graph {
-zoom: .85;
+zoom: 1;
 }
 @media (min-width: 475px) {
 .dash-graph {
-    zoom: 0.9;
+    zoom: 1;
 }
 .rc-slider-mark {
     font-size: 0.9rem;
@@ -213,7 +213,7 @@ zoom: .85;
 
 @media (min-width: 768px) {
 .dash-graph {
-    zoom: 0.95;
+    zoom: 1;
 }
 .rc-slider-mark {
     font-size: 0.95rem;
