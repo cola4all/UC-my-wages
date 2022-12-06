@@ -347,7 +347,7 @@ app.layout = html.Div(
                                 debounce=True
                             ),
                         ],
-                        title = 'Starting Compensation',
+                        title = 'Starting Compensation: $' + str(16698),
                         id = 'initial-wage-accordion-item'
                     ),
                     dbc.AccordionItem(
@@ -780,7 +780,8 @@ def reset_fig_lollipop():
                 fixedrange = True, automargin = True,
                 title_standoff = 15
             ),
-            margin = dict(autoexpand = True, r=0, t=0, b=40, l=10)
+            margin = dict(autoexpand = True, r=0, t=0, b=40, l=10),
+            dragmode = False
             
         )
     fig_lollipop.update_layout(template=lollipop_template)
@@ -811,7 +812,8 @@ def reset_figures():
                 fixedrange = True
                 ),
             margin = dict(autoexpand = True, r=0, t=0, b=40, l=40),
-            hovermode="x"
+            hovermode="x",
+            dragmode = False
         )
     fig_real_wages.update_layout(template=line_template, yaxis_title_text = "Compensation (USD)")
     fig_projected_wages.update_layout(template=line_template, yaxis_title_text = "Your Projected Compensation (USD)")
