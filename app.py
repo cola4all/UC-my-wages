@@ -149,7 +149,7 @@ job_container = html.Div(
         dcc.Dropdown(
             id=ids.RATE_JOB_DROPDOWN,
             options=unique_jobs,
-            value=['GSR (Step 1)', 'GSR (Step 4)', 'GSR (Step 7)', 'GSR (Step 10)', 'Teaching Assistant', 'Teaching Associate', 'Teaching Fellow'],
+            value=['GSR (Step 1)', 'GSR (Step 5)', 'GSR (Step 10)', 'Teaching Assistant', 'Teaching Associate', 'Teaching Fellow','Chancellor (UCB)','Chancellor (UCLA)','UC President'],
             multi=True
         )
     ]
@@ -300,7 +300,7 @@ app.layout = html.Div(
             ),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
-            html.H6('Hover around a data point to compare the compensation of all plotted employees for that year.'),
+            html.H6('Hover around a data point to compare the compensation of all plotted employees for that year. Use the options above to add or remove employees by name or position.'),
             dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
             html.H4('Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?'), 
