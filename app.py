@@ -176,7 +176,7 @@ job_container = html.Div(
         dcc.Dropdown(
             id=ids.RATE_JOB_DROPDOWN,
             options=unique_jobs,
-            value=['GSR (Step 5)', 'Teaching Assistant', 'Chancellor (UCB)','Chancellor (UCLA)','UC President'],
+            value=['GSR (Step 5)', 'Teaching Assistant', 'Assistant Professor (II)', 'Associate Professor (II)', 'Professor (II)'],
             multi=True
         )
     ]
@@ -376,7 +376,8 @@ app.layout = html.Div(
                     dbc.AccordionItem(
                         children = [
                             dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
-                            dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
+                            dcc.Markdown("Graduate student research (GSR) pay scales from 2011-2021 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
+                            dcc.Markdown("Professor pay scales from 2011-2021 are retrieved from [here](https://ap.uci.edu/compensation/salary-scales/)."),
                         ],
                         title = 'Data Sources'
                     ),
