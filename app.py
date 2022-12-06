@@ -149,7 +149,7 @@ job_container = html.Div(
         dcc.Dropdown(
             id=ids.RATE_JOB_DROPDOWN,
             options=unique_jobs,
-            value=['GSR (Step 1)', 'GSR (Step 5)', 'GSR (Step 10)', 'Teaching Assistant', 'Teaching Associate', 'Teaching Fellow','Chancellor (UCB)','Chancellor (UCLA)','UC President'],
+            value=['GSR (Step 5)', 'Teaching Assistant', 'Chancellor (UCB)','Chancellor (UCLA)','UC President'],
             multi=True
         )
     ]
