@@ -732,7 +732,6 @@ def reset_figures():
             title_x=0,
             yaxis=dict(linewidth=1, linecolor = "black", 
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
-                title = dict(text = "Compensation (USD)"),
                 automargin = True,
                 showline = True,
                 fixedrange = True),
@@ -744,8 +743,8 @@ def reset_figures():
                 ),
             hovermode="x"
         )
-    fig_real_wages.update_layout(template=line_template)
-    fig_projected_wages.update_layout(template=line_template)
+    fig_real_wages.update_layout(template=line_template, yaxis_title_text = "Compensation (USD)")
+    fig_projected_wages.update_layout(template=line_template, yaxis_title_text = "Your Projected Compensation (USD)")
 
     # create empty dataframes to track names of traces
     df_traces_in_real_wages = pd.DataFrame({DataSchema.NAME: [], "Index": []}).astype({DataSchema.NAME: "category", "Index": int})
@@ -862,6 +861,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
         y_var = cumadjustment*initial_wage
         x_var = df_combined_filtered.loc[logical_array,DataSchema.YEAR]
         
+        name = 'at ' + name + ' Rate'
         fig_projected_wages.add_trace(go.Scatter(x = x_var, y = y_var, hovertemplate = '$%{y}', name=name))
         fig_projected_wage_indices.append(len(fig_projected_wages.data) - 1)     
 
