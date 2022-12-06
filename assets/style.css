@@ -134,7 +134,7 @@ hr {
 
 
 .rc-slider-mark {
-    font-size: .9rem;
+    font-size: .8rem;
     writing-mode: vertical-lr;
 }
 .rc-slider-mark-text {
@@ -206,7 +206,7 @@ zoom: 1;
     zoom: 1;
 }
 .rc-slider-mark {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     writing-mode: vertical-lr;
 }
 }

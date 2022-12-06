@@ -364,8 +364,6 @@ app.layout = html.Div(
             ),
             dcc.Graph(id=ids.PROJECTED_WAGES_LINE_PLOT, config={'displayModeBar': False}),
             html.Hr(),
-
-
             html.H4('How do your raises compare in terms of the absolute dollar amount?'), 
             dcc.Markdown("We tend to talk about year-to-year raises in terms of percentages, but this obscures the full picture. The **absolute dollar amount** that we receive in a raise depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"),
             dcc.Markdown("See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."),
@@ -373,15 +371,35 @@ app.layout = html.Div(
             html.H5('Years: 2011-2021', id='lollipop-chart-title'),
             dcc.Graph(id=ids.LOLLIPOP_CHART, config={'displayModeBar': False}),
             html.Hr(),
-
-            dcc.Markdown("Although this project is an active work in progress, releasing it to the public in its current state is important because of its relevance to the ongoing labor dispute between the UC and its 48,000 Academic Workers. It is our hope that this project helps the UC bring about its touted commitment to [Accountability and Transparency](https://ucannualwage.ucop.edu/wage/). "),
-            dcc.Markdown("Please [DM us on twitter](https://twitter.com/collthinking420) if you wish report any bugs or feature requests."),
-            dcc.Markdown("Note that there is a current limitation when searching for a name that matches multiple employees for a given year. Currently, the plot displays the aggregate of all employees with that name. A future implementation will separate employees with shared names."),
-            
-            html.Hr(),
-            html.H4('Data Sources'),
-            dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
-            dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
+            dbc.Accordion(
+                children = [
+                    dbc.AccordionItem(
+                        children = [
+                            dcc.Markdown("Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."),
+                            dcc.Markdown("Information about graduate student research (GSR) pay scales from 2011-2012 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."),
+                        ],
+                        title = 'Data Sources'
+                    ),
+                    dbc.AccordionItem(
+                        children = [
+                            dcc.Markdown("**This project is an active work in progress.** We are making this tool available to the public in its current state because of its relevance to the ongoing labor dispute between the UC and its 48,000 Academic Workers. It is our hope that this project helps the UC on its commitment to [Accountability and Transparency](https://ucannualwage.ucop.edu/wage/)."),
+                            dcc.Markdown("The following are some limitations and features on our to-do list:"),
+                            dcc.Markdown('''
+                                * Currently, the app is unable to distinguish between employees who share the same name. The app currently aggregates all employees of the same name for a given year. A future release will be able to distinguish these employees.
+                                * Employees making under $30K were removed from the current database. These may be added back in in the future.
+                                * Improving the speed of generating new plots
+                                * Streamlining the UI and making it more mobile-friendly and responsive across all screen sizes
+                                * Creating a more robust pattern-matching for the employee name search
+                                * Adding reference lines like Cost of Living for different cities to the plots
+                                * Additional visualizations may be added in the future.
+                            '''),
+                            dcc.Markdown("Please [DM us on twitter](https://twitter.com/collthinking420) if you wish to report any bugs or feature requests."),                       
+                        ],
+                        title = 'Limitations and Future Releases'
+                    )
+                ],
+                active_item=[]
+            ),
             html.Hr(),
             dcc.Markdown('''##### **[#UCMyWages](https://twitter.com/search?q=UCMyWages&src=typeahead_click&f=top)**'''),
             dbc.Modal(
@@ -433,29 +451,32 @@ def save_datastore(compensation_type):
 #--------------- callback - close modal -------
 # triggered by pressing the close button
 @app.callback(
-    Output('select-compensation-dropdown', 'value'),
     Output("landing-modal", "is_open"),
     Input("close-modal-button", "n_clicks"),
     prevent_initial_call = True
 )
 def close_modal(n_clicks): 
-    COMPENSATION_TYPE = 'Total Pay'     # sets default COMPENSATION_TYPE here
-    return COMPENSATION_TYPE, False
+    return False
 
 # ------------- callback - save_datastore ----------------------
 # triggered by landing modal changing
 @app.callback(
     ServersideOutput("jobs-data", "data"), 
     ServersideOutput("names-data",'data'),
+    Output('select-compensation-dropdown', 'value'),
     Input('landing-modal', 'is_open'),
     State('jobs-data', 'data'),
     State('names-data', 'data'),
+    State('select-compensation-dropdown', 'value'),
     blocking = True, 
     prevent_initial_call = True)
-def save_datastore(ts, jobs_data, names_data):
+def save_datastore(ts, jobs_data, names_data, COMPENSATION_TYPE):
+    if COMPENSATION_TYPE is None:
+        COMPENSATION_TYPE = 'Total Pay'     # sets default COMPENSATION_TYPE here
+    
     # names_data can be filtered by year? and earnings?
     if (jobs_data is None) and (names_data is None):
-        return df_jobs, df_names
+        return df_jobs, df_names, COMPENSATION_TYPE
     else:
         raise PreventUpdate
     
@@ -759,7 +780,7 @@ def reset_fig_lollipop():
                 fixedrange = True, automargin = True,
                 title_standoff = 15
             ),
-            margin = dict(autoexpand = True, r=0, t=0, b=0, l=10)
+            margin = dict(autoexpand = True, r=0, t=0, b=40, l=10)
             
         )
     fig_lollipop.update_layout(template=lollipop_template)
