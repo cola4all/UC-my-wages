@@ -861,7 +861,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
         y_var = cumadjustment*initial_wage
         x_var = df_combined_filtered.loc[logical_array,DataSchema.YEAR]
         
-        name = 'at ' + name + ' Rate'
+        name = 'at ' + name + ' rate'
         fig_projected_wages.add_trace(go.Scatter(x = x_var, y = y_var, hovertemplate = '$%{y}', name=name))
         fig_projected_wage_indices.append(len(fig_projected_wages.data) - 1)     
 
