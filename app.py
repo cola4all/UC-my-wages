@@ -210,6 +210,7 @@ name_add_container = html.Div(
 )
 
 
+
 t0 = time.time()
 print('creating layout:')
 
@@ -290,6 +291,18 @@ app.layout = html.Div(
                 id = 'top-accordion',
                 always_open = True,
                 active_item = ['item-1', 'item-2']    # this needs to be string id (not assigned id, which starts at 0)
+            ),
+            html.Div([
+                    html.P(),
+                    dbc.Row(
+                        [
+                            dbc.Col(dbc.Label("linear"), className="pe-2"),
+                            dbc.Col(dbc.Switch(value = False, id='real-wages-scale-switch'), className="p-0"),
+                            dbc.Col(dbc.Label("log"), className="p-0"),
+                        ],
+                    className="d-inline-flex g-0 align-items-start",
+                    ),
+                ]
             ),
             dcc.Graph(id=ids.REAL_WAGES_LINE_PLOT, config={'displayModeBar': False}, figure={'layout': {'autosize': True, 'fillframe': True}}),
             html.Hr(),
@@ -379,7 +392,7 @@ app.layout = html.Div(
                         children = [
                             dcc.Markdown("Welcome!"),
                             dcc.Markdown("In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation."),
-                            dcc.Markdown("For optimal viewing experience, please use a desktop or tablet. This app is a pet project under active development, so please bear with me as I continue to make improvements.")
+                            dcc.Markdown("This app is a pet project under active development, so please bear with me as I continue to make improvements.")
                         ]
                     ),
                     dbc.ModalFooter(
@@ -592,8 +605,6 @@ def filter_names_data(names, df_names, title, COMPENSATION_TYPE):
         df_names_filtered = df_names.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR, DataSchema.NAME]]
         #df_names_filtered = df_names_filtered.merge(df_names.loc[(df_names[DataSchema.NAME].isin(names)),DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
 
-
-
     return df_names_filtered
 
 #------------- callback - filtered-jobs-data -----------------
@@ -694,7 +705,7 @@ def reset_fig_lollipop():
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 showline = True, linewidth=1, linecolor = "black",
                 fixedrange = True, automargin = True,
-                title_standoff = 15
+                title_standoff = 15,
             ),
             margin = dict(autoexpand = True, r=0, t=0, b=40, l=10),
             dragmode = False
@@ -704,7 +715,7 @@ def reset_fig_lollipop():
 
     return fig_lollipop
 
-def reset_figures():
+def reset_figures(real_wages_axis_type):
 
     fig_real_wages = go.Figure()
     fig_projected_wages = go.Figure()
@@ -721,7 +732,8 @@ def reset_figures():
                 automargin = True,
                 showline = True,
                 fixedrange = True,
-                title_standoff = 20),
+                title_standoff = 20,
+                type = real_wages_axis_type),
             xaxis=dict(zeroline = False,
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 showline = True, linewidth=1, linecolor = "black",
@@ -756,23 +768,36 @@ def reset_figures():
         Input(ids.INITIAL_WAGE_INPUT, "value"),
         Input('filtered-combined-data', 'data'),
         Input('refresh-figures-button', 'n_clicks'),
+        Input('real-wages-scale-switch', 'value'),
         State(ids.YEAR_RANGE_SLIDER, 'value'),
         State('traces-in-real-wages','data'),
         State('traces-in-projected-wages','data'),
         State(ids.PROJECTED_WAGES_LINE_PLOT, "figure"),
         State(ids.REAL_WAGES_LINE_PLOT, "figure"),
+        State(ids.LOLLIPOP_CHART, "figure"),
         State('compensation-type-store', 'data'),
         prevent_initial_call = True,
         blocking = True
 )
-def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, COMPENSATION_TYPE):
+def update_figures(initial_wage, df_combined_filtered, n_clicks, real_wages_scale_switch_value, years, df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop, COMPENSATION_TYPE):
     min_year = years[0]
     max_year = years[1]
     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    
+    if (real_wages_scale_switch_value == True):
+        real_wages_axis_type = 'log' # or linear
+    else:           # default is linear even
+        real_wages_axis_type = 'linear'
+
+    # if just the switch is pushed, only need to update the scale and don't do anything else
+    if trigger_id == 'real-wages-scale-switch':
+        fig_real_wages['layout']['yaxis']['type']=real_wages_axis_type
+        lollipop_chart_title = title="Years: " + str(min_year) + "-" + str(max_year)
+        return df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop, lollipop_chart_title
 
     # if no names/positions added, df_combined filtered is empty, so just reset plots:
     if len(df_combined_filtered) == 0:
-        fig_projected_wages, fig_real_wages, df_traces_in_projected_wages, df_traces_in_real_wages = reset_figures()
+        fig_projected_wages, fig_real_wages, df_traces_in_projected_wages, df_traces_in_real_wages = reset_figures(real_wages_axis_type)
         fig_lollipop = reset_fig_lollipop()
         lollipop_chart_title = title="Years: " + str(min_year) + "-" + str(max_year)
         return df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop, lollipop_chart_title
@@ -784,7 +809,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
             current_fig_max_year = int(fig_real_wages['layout']['xaxis']['range'][1]//1)          # this rounds down
 
             if (current_fig_min_year != min_year) or (current_fig_max_year != max_year) or (trigger_id == ids.INITIAL_WAGE_INPUT):
-                fig_projected_wages, fig_real_wages, df_traces_in_projected_wages, df_traces_in_real_wages = reset_figures()
+                fig_projected_wages, fig_real_wages, df_traces_in_projected_wages, df_traces_in_real_wages = reset_figures(real_wages_axis_type)
                 fig_lollipop = reset_fig_lollipop()
             else:
                 # do not reset real/projected wages figs - build it from dictionaries from their existing state
@@ -795,7 +820,7 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, years, df_trace
     # the very first invocation of this callback is from updating 'filtered-jobs-data', triggered by the modal closing
     if (df_traces_in_real_wages is None) or (df_traces_in_projected_wages is None) or (trigger_id == 'refresh-figures-button'):
         reset_flag = False
-        fig_projected_wages, fig_real_wages, df_traces_in_projected_wages, df_traces_in_real_wages = reset_figures()
+        fig_projected_wages, fig_real_wages, df_traces_in_projected_wages, df_traces_in_real_wages = reset_figures(real_wages_axis_type)
         fig_lollipop = reset_fig_lollipop()
 
     # for real wages:
