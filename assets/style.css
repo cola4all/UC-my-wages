@@ -187,14 +187,12 @@ hr {
 .rc-slider-mark {
     font-size: .8rem;
     writing-mode: vertical-lr;
-    margin-bottom: 1rem;
 }
 
 @media (min-width: 576px) {
     .rc-slider-mark {
         font-size: 0.85rem;
         writing-mode: vertical-lr;
-        padding-bottom: 1rem;
     }
 }
 

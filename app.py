@@ -617,8 +617,8 @@ def filter_jobs_data(jobs, df_names_filtered, df_jobs, COMPENSATION_TYPE):
 
     # IMPORTANT for mem usage when dealing with categories (cat.remove_unused_categories)
     logical_array = (df_jobs[DataSchema.NAME].isin(jobs)) 
-    df_jobs_filtered = df_jobs.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR]]
-    df_jobs_filtered = df_jobs_filtered.merge(df_jobs.loc[logical_array, DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
+    df_jobs_filtered = df_jobs.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR, DataSchema.NAME]]
+    #df_jobs_filtered = df_jobs_filtered.merge(df_jobs.loc[logical_array, DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
 
     # combine
     df_jobs_filtered= pd.concat([df_jobs_filtered, df_names_filtered]).astype({DataSchema.NAME: "category"})
@@ -652,8 +652,7 @@ def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE, year_range_
 
     # filter out unused years
     logical_array = (df_combined[DataSchema.YEAR] >= min_year) & (df_combined[DataSchema.YEAR] <= max_year)
-    df_combined_filtered = df_combined.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR]]
-    df_combined_filtered = df_combined_filtered.merge(df_combined.loc[logical_array, DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
+    df_combined_filtered = df_combined.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR, DataSchema.NAME]]
     
     # handle duplicates (same year and name)
     # TODO: handle "duplicates" with common names
