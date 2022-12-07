@@ -589,8 +589,8 @@ def filter_names_data(names, df_names, title, COMPENSATION_TYPE):
         df_names_filtered = pd.DataFrame(columns = [COMPENSATION_TYPE,DataSchema.YEAR, DataSchema.NAME])
     else:
         logical_array = (df_names[DataSchema.NAME].isin(names))
-        df_names_filtered = df_names.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR]]
-        df_names_filtered = df_names_filtered.merge(df_names.loc[(df_names[DataSchema.NAME].isin(names)),DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
+        df_names_filtered = df_names.loc[logical_array, [COMPENSATION_TYPE, DataSchema.YEAR, DataSchema.NAME]]
+        #df_names_filtered = df_names_filtered.merge(df_names.loc[(df_names[DataSchema.NAME].isin(names)),DataSchema.NAME].cat.remove_unused_categories(),left_index=True, right_index=True)
 
 
 
