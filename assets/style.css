@@ -37,13 +37,6 @@ hr {
     border-radius: 1rem;
 }
 
-.dropdown-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 2rem 1fr;
-    column-gap: 1rem;
-    border-style: none;
-}
 
 .button {
     border-radius: .3rem;
@@ -59,15 +52,17 @@ hr {
 
 #name-container {
     background: #6c9fb9;
+    display: grid;
     padding: 1rem;
     border-radius: 1rem;
     margin-top: 1rem;
 }
 
-#name-search-input {
+
+/* #name-search-input {
     margin-left: 0.5rem;
     margin-bottom: 1rem;
-}
+} */
 
 #initial-wage-dropdown {
     grid-column: 1 / span 2;
@@ -133,10 +128,7 @@ hr {
 
 
 
-.rc-slider-mark {
-    font-size: .8rem;
-    writing-mode: vertical-lr;
-}
+
 .rc-slider-mark-text {
     color: #1b232f;
 }
@@ -192,41 +184,30 @@ hr {
     padding-bottom: 20px;
 }
 
-@media(max-width: 800px) {
-    .dropdown-container {
-        grid-template-columns: 1fr;
+.rc-slider-mark {
+    font-size: .8rem;
+    writing-mode: vertical-lr;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 576px) {
+    .rc-slider-mark {
+        font-size: 0.85rem;
+        writing-mode: vertical-lr;
+        padding-bottom: 1rem;
     }
 }
 
-.dash-graph {
-zoom: 1;
-}
-@media (min-width: 475px) {
-.dash-graph {
-    zoom: 1;
-}
-.rc-slider-mark {
-    font-size: 0.85rem;
-    writing-mode: vertical-lr;
-}
-}
-
 @media (min-width: 768px) {
-.dash-graph {
-    zoom: 1;
+    .rc-slider-mark {
+        font-size: 0.95rem;
+        writing-mode: vertical-lr;
+    }
 }
-.rc-slider-mark {
-    font-size: 0.95rem;
-    writing-mode: vertical-lr;
-}
-}
-@media (min-width: 1024px) {
-.dash-graph {
-    zoom: 1;
-}
-.rc-slider-mark {
-    font-size: 1rem;
-    writing-mode: horizontal-tb;
-}
+@media (min-width: 992px) {
+    .rc-slider-mark {
+        font-size: 1rem;
+        writing-mode: horizontal-tb;
+    }
 }
 
