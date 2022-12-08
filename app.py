@@ -44,6 +44,7 @@ app.index_string = '''
 APP_PATH = str(pathlib.Path(__file__).parent.resolve())
 JOB_DATA_PATH =  os.path.join(APP_PATH, "assets", "salaries_by_job.parquet")
 NAME_DATA_PATH =  os.path.join(APP_PATH, "assets", "salaries_by_name.parquet")
+PROPOSAL_DATA_PATH = os.path.join(APP_PATH, "assets", "wage_proposals.csv")
 
 # create schemas so that you don't need to remember the labels when coding
 class DataSchema:
@@ -79,6 +80,7 @@ class ids:
     YEAR_RANGE_CONTAINER = "year-range-container"
     YEAR_RANGE_SLIDER = "year-range-slider"
     INITIAL_WAGE_CONTAINER = 'initial-wage-container'
+    PROPOSAL_LOLLIPOP_PLOT = 'proposal-lollipop-plot'
 
 class colors:
     PLOT_BACKGROUND_COLOR = "#edeff1"
@@ -117,6 +119,128 @@ print('size of df_names_filtered:')
 print(df_names.info(memory_usage = 'deep'))
 
 t0 = time.time()
+
+
+
+t0 = time.time()
+print('reading csv 3:')
+df_proposal = pd.read_csv(PROPOSAL_DATA_PATH)
+print(time.time() - t0)
+
+print('size of df_names_filtered:')
+print(df_proposal.info(memory_usage = 'deep'))
+
+
+
+fig_proposal = go.Figure()
+
+# templates
+proposal_template = go.layout.Template()
+proposal_template.layout = go.Layout(
+        paper_bgcolor=colors.PLOT_BACKGROUND_COLOR,
+        plot_bgcolor=colors.PLOT_BACKGROUND_COLOR,
+        showlegend=True,
+        title_font=dict(family="Arial", size=20),
+        title_x=0,
+        yaxis=dict(linewidth=1, linecolor = "black", 
+            showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
+            automargin =True,
+            showline = False,
+            fixedrange = True
+        ),
+        xaxis=dict(zeroline = False, rangemode = "tozero", 
+            title = dict(text = "Compensation (USD)"),
+            showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
+            showline = True, linewidth=1, linecolor = "black",
+            fixedrange = True, automargin = True,
+            title_standoff = 15,
+        ),
+        margin = dict(autoexpand = True, r=0, t=0, b=40, l=10),
+        dragmode = False,
+
+        
+    )
+fig_proposal.update_layout(template=proposal_template, 
+    legend= dict(
+        yanchor="bottom", 
+        y=1.02,    
+        xanchor="center",
+        x=0.5,
+        orientation='h'))
+
+t0 = time.time()
+# create the static proposal plot
+df_proposal = df_proposal.iloc[::-1]       # reverses order of df
+proposal_x_current = df_proposal['Current'].tolist()
+proposal_x_uc = df_proposal['UC Proposal'].tolist()  
+proposal_x_uaw = df_proposal['UAW Proposal'].tolist()  
+proposal_y = df_proposal['Position'].str.replace(' ','<br>', n=1).tolist()      # also add line break the first space to wrap text
+
+
+# colors
+uaw_dot_color = "#FF366A"
+uc_dot_color = "#005581"
+current_dot_color = "#616161"
+uc_uaw_line_color = "#7B7B7B"
+current_uc_line_color = "#CBCBCB"
+
+for i in range(0, len(proposal_x_uaw)):             # this skips the last two missing from uaw
+    fig_proposal.add_trace(go.Scatter(
+                showlegend=False,
+                x = [proposal_x_uc[i], proposal_x_uaw[i]],
+                y = [proposal_y[i],proposal_y[i]],
+                hoverinfo='skip',
+                line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2)))
+
+for i in range(0, len(proposal_x_current)):         
+    fig_proposal.add_trace(go.Scatter(
+                showlegend=False,
+                x = [proposal_x_current[i], proposal_x_uc[i]],
+                y = [proposal_y[i],proposal_y[i]],
+                hoverinfo='skip',
+                line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2, dash='dot')))
+
+proposal_marker_size = 9
+fig_proposal.add_trace(go.Scatter(
+                name='Current<br>Base Pay',
+                x=proposal_x_current,
+                y=proposal_y,
+                mode = "markers",
+                marker_symbol = "circle",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'Current:<br>$%{x}<extra>%{y}</extra>',
+                marker_color=current_dot_color,
+            )
+)
+
+fig_proposal.add_trace(go.Scatter(
+                name='UC<br>Proposal',
+                x=proposal_x_uc,
+                y=proposal_y,
+                mode = "markers",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'UC Proposal:<br>$%{x}<extra>%{y}</extra>',
+                marker_color=uc_dot_color)
+)
+
+
+fig_proposal.add_trace(go.Scatter(
+                name='UAW<br>Proposal',
+                x=proposal_x_uaw,
+                y=proposal_y,
+                mode = "markers",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'UAW Proposal:<br>$%{x}<extra>%{y}</extra>',
+                marker_color=uaw_dot_color)
+)
+
+
+if len(proposal_y) < 6:
+    fig_proposal.update_layout(height = 400)
+else:
+    fig_proposal.update_layout(height = (len(proposal_y)-6)*50+400)            # increase height by 30px for each additional person past 5
+
+
 
 cat_type_year = pd.api.types.CategoricalDtype(categories=[2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021], ordered=True)
 df_jobs['Year'] = df_jobs['Year'].astype(cat_type_year)
@@ -238,8 +362,13 @@ app.layout = html.Div(
             dcc.Store(id='traces-in-projected-wages'),
             dcc.Store(id='compensation-type-store'),
             dcc.Interval(id='page-load-interval', n_intervals=0, max_intervals=0, interval=1), # max_intervals = 0 ensures callback only runs once at startup
-            
-
+            html.H4('UAW vs UC Base Pay Proposals'),
+            html.H6('These base pays would be effective starting Oct 2023'),
+            html.H6('Last updated: 12/08/2022, 12:00pm PT'),
+            dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),
+            html.P(),
+            html.P("*UAW's Step 8 proposed base pay was used for current Step 9 and 10 GSRs in this figure, as the UAW's proposed payscale does not go beyond Step 8."),
+            html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             dcc.Markdown('Select a position from the options below or searching for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year.'),
             dbc.Accordion(
