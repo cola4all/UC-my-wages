@@ -183,6 +183,7 @@ uc_dot_color = "#005581"
 current_dot_color = "#616161"
 uc_uaw_line_color = "#7B7B7B"
 current_uc_line_color = "#CBCBCB"
+proposal_marker_size = 7
 
 for i in range(0, len(proposal_x_uaw)):             # this skips the last two missing from uaw
     fig_proposal.add_trace(go.Scatter(
@@ -200,7 +201,7 @@ for i in range(0, len(proposal_x_current)):
                 hoverinfo='skip',
                 line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2, dash='dot')))
 
-proposal_marker_size = 9
+
 fig_proposal.add_trace(go.Scatter(
                 name='Current<br>Base Pay',
                 x=proposal_x_current,
