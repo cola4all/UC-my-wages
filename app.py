@@ -932,7 +932,11 @@ def update_figures(initial_wage, df_combined_filtered, n_clicks, real_wages_scal
         )
 
         lollipop_chart_title = title="Years: " + str(min_year) + "-" + str(max_year)
-
+        #fig_lollipop.layout.template.layout.height = (len(lollipop_y)-5)*100+400
+        if len(lollipop_y) < 6:
+            fig_lollipop.update_layout(height = 400)
+        else:
+            fig_lollipop.update_layout(height = (len(lollipop_y)-6)*50+400)            # increase height by 30px for each additional person past 5
     return df_traces_in_real_wages, df_traces_in_projected_wages, fig_projected_wages, fig_real_wages, fig_lollipop, lollipop_chart_title
 
 # run script
