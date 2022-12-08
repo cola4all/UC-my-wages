@@ -732,8 +732,7 @@ def reset_figures(real_wages_axis_type):
                 automargin = True,
                 showline = True,
                 fixedrange = True,
-                title_standoff = 20,
-                type = real_wages_axis_type),
+                title_standoff = 20),
             xaxis=dict(zeroline = False,
                 showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
                 showline = True, linewidth=1, linecolor = "black",
@@ -744,7 +743,7 @@ def reset_figures(real_wages_axis_type):
             hovermode="x",
             dragmode = False
         )
-    fig_real_wages.update_layout(template=line_template, yaxis_title_text = "Compensation (USD)")
+    fig_real_wages.update_layout(template=line_template, yaxis_title_text = "Compensation (USD)", yaxis_type = real_wages_axis_type),
     fig_projected_wages.update_layout(template=line_template, yaxis_title_text = "Your Projected Compensation (USD)")
 
     # create empty dataframes to track names of traces
