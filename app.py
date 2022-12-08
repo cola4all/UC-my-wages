@@ -209,7 +209,7 @@ fig_proposal.add_trace(go.Scatter(
                 mode = "markers",
                 marker_symbol = "circle",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'Current:<br>$%{x}<extra>%{y}</extra>',
+                hovertemplate = 'Current:<br>$%{x:.2f}<extra>%{y}</extra>',
                 marker_color=current_dot_color,
             )
 )
@@ -220,7 +220,7 @@ fig_proposal.add_trace(go.Scatter(
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'UC Proposal:<br>$%{x}<extra>%{y}</extra>',
+                hovertemplate = 'UC Proposal:<br>$%{x:.2f}<extra>%{y}</extra>',
                 marker_color=uc_dot_color)
 )
 
@@ -231,7 +231,7 @@ fig_proposal.add_trace(go.Scatter(
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'UAW Proposal:<br>$%{x}<extra>%{y}</extra>',
+                hovertemplate = 'UAW Proposal:<br>$%{x:.2f}<extra>%{y}</extra>',
                 marker_color=uaw_dot_color)
 )
 
@@ -367,8 +367,8 @@ app.layout = html.Div(
             dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),
             html.P(),
             html.P("*UAW's Step 8 proposed base pay was used for current Step 9 and 10 GSRs in this figure, as the UAW's proposed payscale does not go beyond Step 8."),
-            html.P('These base pays would be effective starting Oct 2023'),
-            html.P("Current data reflects proposals from Nov 30 (UAW) and Dec 2 (UC). We will be updating the tracker as proposed wages are verified"),
+            html.P('These base pays would be effective starting Oct 2023.'),
+            html.P("Current data reflects proposals from Nov 30 (UAW) and Dec 2 (UC). We will be updating the tracker as proposed wages are verified."),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             dcc.Markdown('Select a position from the options below or searching for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year.'),
