@@ -368,6 +368,7 @@ app.layout = html.Div(
             html.P(),
             html.P("*UAW's Step 8 proposed base pay was used for current Step 9 and 10 GSRs in this figure, as the UAW's proposed payscale does not go beyond Step 8."),
             html.P('These base pays would be effective starting Oct 2023.'),
+            html.P("The UAW proposal guarantees summer appointments. The UC proposal does not."),
             html.P("Current data reflects proposals from Nov 30 (UAW) and Dec 2 (UC). We will be updating the tracker as proposed wages are verified."),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
