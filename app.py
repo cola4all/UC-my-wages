@@ -172,8 +172,9 @@ t0 = time.time()
 # create the static proposal plot
 df_proposal = df_proposal.iloc[::-1]       # reverses order of df
 proposal_x_current = df_proposal['Current'].tolist()
-proposal_x_uc = df_proposal['UC Proposal'].tolist()  
-proposal_x_uaw = df_proposal['UAW Proposal'].tolist()  
+proposal_x_uc = df_proposal['UC Proposal (Dec 2)'].tolist()  
+proposal_x_uaw = df_proposal['SRU/ASE Proposal (Dec 8)'].tolist()  
+proposal_x_sru_nov30 = df_proposal['SRU/ASE Proposal (Nov 30)'].tolist()  
 proposal_y = df_proposal['Position'].str.replace(' ','<br>', n=1).tolist()      # also add line break the first space to wrap text
 
 
@@ -183,7 +184,16 @@ uc_dot_color = "#005581"
 current_dot_color = "#616161"
 uc_uaw_line_color = "#7B7B7B"
 current_uc_line_color = "#CBCBCB"
+sru_nov30_dot_color =  "#D4A3B0"
 proposal_marker_size = 7
+
+for i in range(0, len(proposal_x_sru_nov30)):         
+    fig_proposal.add_trace(go.Scatter(
+                showlegend=False,
+                x = [proposal_x_uaw[i], proposal_x_sru_nov30[i]],
+                y = [proposal_y[i],proposal_y[i]],
+                hoverinfo='skip',
+                line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2, dash='dot')))
 
 for i in range(0, len(proposal_x_uaw)):             # this skips the last two missing from uaw
     fig_proposal.add_trace(go.Scatter(
@@ -215,7 +225,7 @@ fig_proposal.add_trace(go.Scatter(
 )
 
 fig_proposal.add_trace(go.Scatter(
-                name='UC<br>Proposal',
+                name='UC (Dec 2)<br>Proposal',
                 x=proposal_x_uc,
                 y=proposal_y,
                 mode = "markers",
@@ -224,14 +234,23 @@ fig_proposal.add_trace(go.Scatter(
                 marker_color=uc_dot_color)
 )
 
+fig_proposal.add_trace(go.Scatter(
+                name='SRU/ASE (Nov 30)<br>Proposal',
+                x=proposal_x_sru_nov30,
+                y=proposal_y,
+                mode = "markers",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'SRU/ASEProposal:<br>$%{x:.2f}<extra>%{y}</extra>',
+                marker_color=sru_nov30_dot_color)
+)
 
 fig_proposal.add_trace(go.Scatter(
-                name='UAW<br>Proposal',
+                name='SRU/ASE (Dec 8)<br>Proposal',
                 x=proposal_x_uaw,
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'UAW Proposal:<br>$%{x:.2f}<extra>%{y}</extra>',
+                hovertemplate = 'SRU/ASE Proposal:<br>$%{x:.2f}<extra>%{y}</extra>',
                 marker_color=uaw_dot_color)
 )
 
@@ -366,10 +385,10 @@ app.layout = html.Div(
             html.H4('UAW vs UC Base Pay Proposals'),
             dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),
             html.P(),
-            html.P("*UAW's Step 8 proposed base pay was used for current Step 9 and 10 GSRs in this figure, as the UAW's proposed payscale does not go beyond Step 8."),
             html.P('These base pays would be effective starting Oct 2023.'),
-            html.P("The UAW proposal guarantees summer appointments. The UC proposal does not."),
-            html.P("Current data reflects proposals from Nov 30 (UAW) and Dec 2 (UC). We will be updating the tracker as proposed wages are verified."),
+            html.P("These base pays assume a 12-month appointment."),
+            html.P("Current data reflects proposals from Nov 30 (UAW) and Dec 8 (UC). We will be updating the tracker as proposed wages are verified."),
+            dcc.Markdown("Proposed base pay calculated using [this](https://docs.google.com/spreadsheets/d/1rAva2zX-_qGTWccOB1mLKaZbQnbSejW2PQX5UwaDy74/edit#gid=304910910) and [this](https://drive.google.com/file/d/1FveulJ47nkcBUbSd4UczKuGnFM7A4snj/view)."),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             dcc.Markdown('Select a position from the options below or searching for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year.'),
