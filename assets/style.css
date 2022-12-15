@@ -20,6 +20,11 @@ hr {
     width: 100%;
 } 
 
+#navbar-brand-container {
+    margin-left: 0rem;
+    margin-right: 0rem;
+}
+
 .title-container {
     width: 100%;
     text-align: left;
@@ -29,6 +34,7 @@ hr {
     padding-top: 1rem;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
+    margin-left: 0rem;
 }
 
 .inputs-container {

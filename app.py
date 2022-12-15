@@ -149,7 +149,7 @@ proposal_template.layout = go.Layout(
             fixedrange = True
         ),
         xaxis=dict(zeroline = False, rangemode = "tozero", 
-            title = dict(text = "Compensation (USD)"),
+            title = dict(text = "Base Pay (USD)"),
             showgrid=True,  gridcolor = colors.GRID_LINES_COLOR, gridwidth=1,
             showline = True, linewidth=1, linecolor = "black",
             fixedrange = True, automargin = True,
@@ -173,32 +173,34 @@ t0 = time.time()
 df_proposal = df_proposal.iloc[::-1]       # reverses order of df
 proposal_x_current = df_proposal['Current'].tolist()
 proposal_x_uc = df_proposal['UC Proposal (Dec 2)'].tolist()  
-proposal_x_uaw = df_proposal['SRU/ASE Proposal (Dec 8)'].tolist()  
+proposal_x_sru_dec8 = df_proposal['SRU/ASE Proposal (Dec 8)'].tolist()  
 proposal_x_sru_nov30 = df_proposal['SRU/ASE Proposal (Nov 30)'].tolist()  
+proposal_x_sru_nov14 = df_proposal['SRU/ASE Proposal (Nov 14)'].tolist()  
 proposal_y = df_proposal['Position'].str.replace(' ','<br>', n=1).tolist()      # also add line break the first space to wrap text
 
 
 # colors
-uaw_dot_color = "#FF366A"
+
 uc_dot_color = "#005581"
 current_dot_color = "#616161"
-uc_uaw_line_color = "#7B7B7B"
-current_uc_line_color = "#CBCBCB"
-sru_nov30_dot_color =  "#D4A3B0"
-proposal_marker_size = 7
+sru_dec8_color = "#FF366A"
+sru_nov30_dot_color =  "#C07A8C"
+sru_nov14_dot_color = "#D4A3B0"
 
+proposal_marker_size = 7
+                
 for i in range(0, len(proposal_x_sru_nov30)):         
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
-                x = [proposal_x_uaw[i], proposal_x_sru_nov30[i]],
+                x = [proposal_x_sru_dec8[i], proposal_x_sru_nov14[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
                 line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2, dash='dot')))
 
-for i in range(0, len(proposal_x_uaw)):             # this skips the last two missing from uaw
+for i in range(0, len(proposal_x_sru_dec8)):             # this skips the last two missing from uaw
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
-                x = [proposal_x_uc[i], proposal_x_uaw[i]],
+                x = [proposal_x_uc[i], proposal_x_sru_dec8[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
                 line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2)))
@@ -213,7 +215,7 @@ for i in range(0, len(proposal_x_current)):
 
 
 fig_proposal.add_trace(go.Scatter(
-                name='Current<br>Base Pay',
+                name='Current Base Pay',
                 x=proposal_x_current,
                 y=proposal_y,
                 mode = "markers",
@@ -225,33 +227,43 @@ fig_proposal.add_trace(go.Scatter(
 )
 
 fig_proposal.add_trace(go.Scatter(
-                name='UC (Dec 2)<br>Proposal',
+                name='UC (Dec 2)',
                 x=proposal_x_uc,
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'UC Proposal:<br>$%{x:.2f}<extra>%{y}</extra>',
+                hovertemplate = 'UC (Dec 2):<br>$%{x:.2f}<extra>%{y}</extra>',
                 marker_color=uc_dot_color)
 )
 
 fig_proposal.add_trace(go.Scatter(
-                name='SRU/ASE (Nov 30)<br>Proposal',
+                name='SRU/ASE (Dec 8)',
+                x=proposal_x_sru_dec8,
+                y=proposal_y,
+                mode = "markers",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'SRU/ASE (Dec 8):<br>$%{x:.2f}<extra>%{y}</extra>',
+                marker_color=sru_dec8_color)
+)
+
+fig_proposal.add_trace(go.Scatter(
+                name='SRU/ASE (Nov 30)',
                 x=proposal_x_sru_nov30,
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'SRU/ASEProposal:<br>$%{x:.2f}<extra>%{y}</extra>',
+                hovertemplate = 'SRU/ASE (Nov 30):<br>$%{x:.2f}<extra>%{y}</extra>',
                 marker_color=sru_nov30_dot_color)
 )
 
 fig_proposal.add_trace(go.Scatter(
-                name='SRU/ASE (Dec 8)<br>Proposal',
-                x=proposal_x_uaw,
+                name='SRU/ASE (Nov 14)',
+                x=proposal_x_sru_nov14,
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'SRU/ASE Proposal:<br>$%{x:.2f}<extra>%{y}</extra>',
-                marker_color=uaw_dot_color)
+                hovertemplate = 'SRU/ASE (Nov 14):<br>$%{x:.2f}<extra>%{y}</extra>',
+                marker_color=sru_nov14_dot_color)
 )
 
 
@@ -355,6 +367,23 @@ name_add_container = html.Div(
 
 
 
+navbar = dbc.Navbar(
+    dbc.Container(
+        [
+            html.A(
+                dbc.NavbarBrand("UC My Wages", style={"font-size": "1.5rem"}),
+                href="#",
+                style={"textDecoration": "none"},
+            )
+        ],
+        id="navbar-brand-container"
+    ),
+    color="#005581",
+    dark=True,
+    sticky='top',
+    className = "navbar"
+)
+
 t0 = time.time()
 print('creating layout:')
 
@@ -362,12 +391,13 @@ print('creating layout:')
 app.layout = html.Div(
     className="app-div",
     children =[
-        html.Header(
-            className = "title-container",
-            children=[
-                html.H2(app.title)
-            ]
-        ),
+        # html.Header(
+        #     className = "title-container",
+        #     children=[
+        #         html.H2(app.title)
+        #     ]
+        # ),
+        navbar,
         html.Div(
         className="content-div",
         children=[
