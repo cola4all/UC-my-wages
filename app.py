@@ -184,8 +184,8 @@ proposal_y = df_proposal['Position'].str.replace(' ','<br>', n=1).tolist()      
 uc_dot_color = "#005581"
 current_dot_color = "#616161"
 sru_dec8_color = "#FF366A"
-sru_nov30_dot_color =  "#C07A8C"
-sru_nov14_dot_color = "#D4A3B0"
+sru_nov30_dot_color =  "#E1839C"
+sru_nov14_dot_color = "#EAABBC"
 
 proposal_marker_size = 7
                 
