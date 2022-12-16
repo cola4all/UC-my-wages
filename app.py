@@ -188,11 +188,12 @@ sru_dec8_color = "#FF366A"
 sru_nov30_dot_color =  "#E1839C"
 sru_nov14_dot_color = "#EAABBC"
 
-proposal_marker_size = 7
+proposal_marker_size = 6
                 
 for i in range(0, len(proposal_x_sru_nov30)):         
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
+                mode = "lines",
                 x = [proposal_x_sru_dec8[i], proposal_x_sru_nov14[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
@@ -201,6 +202,7 @@ for i in range(0, len(proposal_x_sru_nov30)):
 for i in range(0, len(proposal_x_sru_dec8)):             # this skips the last two missing from uaw
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
+                mode = "lines",
                 x = [proposal_x_uc_dec15[i], proposal_x_sru_dec8[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
@@ -209,6 +211,7 @@ for i in range(0, len(proposal_x_sru_dec8)):             # this skips the last t
 for i in range(0, len(proposal_x_current)):         
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
+                mode = "lines",
                 x = [proposal_x_current[i], proposal_x_uc_dec15[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
