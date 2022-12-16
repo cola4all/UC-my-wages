@@ -404,12 +404,6 @@ print('creating layout:')
 app.layout = html.Div(
     className="app-div",
     children =[
-        # html.Header(
-        #     className = "title-container",
-        #     children=[
-        #         html.H2(app.title)
-        #     ]
-        # ),
         navbar,
         html.Div(
         className="content-div",
@@ -426,12 +420,18 @@ app.layout = html.Div(
             dcc.Store(id='compensation-type-store'),
             dcc.Interval(id='page-load-interval', n_intervals=0, max_intervals=0, interval=1), # max_intervals = 0 ensures callback only runs once at startup
             html.H4('UAW vs UC Base Pay Proposals'),
-            dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),
-            html.P(),
-            html.P('These base pays would be effective starting Oct 2023 and assume a 12-month appointment.'),
-            html.P("Current data reflects proposals from Dec 8 (UAW) and Dec 15 (UC). We will be updating the tracker as proposed wages are verified."),
-            dcc.Markdown("This plot aims to visualize the movement on a central bargaining issue over the course of negotiations between the two bargaining parties."),
-            dcc.Markdown("As a disclaimer, the data used in the visualization summarizes base wage proposals using information that is most generalizable across all grad workers. The visualization does not reflect details like campus-based adjustments and new experience-based increments. For complete proposal details, please see the bargaining update documents from [FairUCNow](https://www.fairucnow.org/bargaining/)."),
+
+            dbc.Row([
+                dbc.Col(dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),xl=9,lg=12),
+                dbc.Col([
+                    html.P(),
+                    html.P('These base pays would be effective starting Oct 2023 and assume a 12-month appointment.'),
+                    html.P("Current data reflects proposals from Dec 8 (UAW) and Dec 15 (UC). We will be updating the tracker as proposed wages are verified."),
+                    dcc.Markdown("This plot aims to visualize the movement on a central bargaining issue over the course of negotiations between the two bargaining parties."),
+                    dcc.Markdown("As a disclaimer, the data used in the visualization summarizes base wage proposals using information that is most generalizable across all grad workers. The visualization does not reflect details like campus-based adjustments and new experience-based increments. For complete proposal details, please see the bargaining update documents from [FairUCNow](https://www.fairucnow.org/bargaining/)."),
+                ], class_name="align-self-end")
+            ],
+            ),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             dcc.Markdown('Select a position from the options below or searching for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year.'),
