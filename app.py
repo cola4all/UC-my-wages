@@ -172,7 +172,8 @@ t0 = time.time()
 # create the static proposal plot
 df_proposal = df_proposal.iloc[::-1]       # reverses order of df
 proposal_x_current = df_proposal['Current'].tolist()
-proposal_x_uc = df_proposal['UC Proposal (Dec 2)'].tolist()  
+proposal_x_uc_dec2 = df_proposal['UC Proposal (Dec 2)'].tolist()
+proposal_x_uc_dec15 = df_proposal['UC Mediated Proposal (Dec 15)'].tolist()
 proposal_x_sru_dec8 = df_proposal['SRU/ASE Proposal (Dec 8)'].tolist()  
 proposal_x_sru_nov30 = df_proposal['SRU/ASE Proposal (Nov 30)'].tolist()  
 proposal_x_sru_nov14 = df_proposal['SRU/ASE Proposal (Nov 14)'].tolist()  
@@ -180,8 +181,8 @@ proposal_y = df_proposal['Position'].str.replace(' ','<br>', n=1).tolist()      
 
 
 # colors
-
-uc_dot_color = "#005581"
+uc_dec2_dot_color = "#6FA7C0"
+uc_dec15_dot_color = "#005581"
 current_dot_color = "#616161"
 sru_dec8_color = "#FF366A"
 sru_nov30_dot_color =  "#E1839C"
@@ -200,7 +201,7 @@ for i in range(0, len(proposal_x_sru_nov30)):
 for i in range(0, len(proposal_x_sru_dec8)):             # this skips the last two missing from uaw
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
-                x = [proposal_x_uc[i], proposal_x_sru_dec8[i]],
+                x = [proposal_x_uc_dec15[i], proposal_x_sru_dec8[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
                 line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2)))
@@ -208,7 +209,7 @@ for i in range(0, len(proposal_x_sru_dec8)):             # this skips the last t
 for i in range(0, len(proposal_x_current)):         
     fig_proposal.add_trace(go.Scatter(
                 showlegend=False,
-                x = [proposal_x_current[i], proposal_x_uc[i]],
+                x = [proposal_x_current[i], proposal_x_uc_dec15[i]],
                 y = [proposal_y[i],proposal_y[i]],
                 hoverinfo='skip',
                 line=dict(color=colors.LOLLIPOP_LINE_COLOR, width=2, dash='dot')))
@@ -221,39 +222,29 @@ fig_proposal.add_trace(go.Scatter(
                 mode = "markers",
                 marker_symbol = "circle",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'Current:<br>$%{x:.2f}<extra>%{y}</extra>',
+                hovertemplate = 'Current:<br>$%{x:,.2f}<extra>%{y}</extra>',
                 marker_color=current_dot_color,
             )
 )
 
 fig_proposal.add_trace(go.Scatter(
                 name='UC (Dec 2)',
-                x=proposal_x_uc,
+                x=proposal_x_uc_dec2,
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'UC (Dec 2):<br>$%{x:.2f}<extra>%{y}</extra>',
-                marker_color=uc_dot_color)
+                hovertemplate = 'UC (Dec 2):<br>$%{x:,.2f}<extra>%{y}</extra>',
+                marker_color=uc_dec2_dot_color)
 )
 
 fig_proposal.add_trace(go.Scatter(
-                name='SRU/ASE (Dec 8)',
-                x=proposal_x_sru_dec8,
+                name='UC Mediated (Dec 15)',
+                x=proposal_x_uc_dec15,
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'SRU/ASE (Dec 8):<br>$%{x:.2f}<extra>%{y}</extra>',
-                marker_color=sru_dec8_color)
-)
-
-fig_proposal.add_trace(go.Scatter(
-                name='SRU/ASE (Nov 30)',
-                x=proposal_x_sru_nov30,
-                y=proposal_y,
-                mode = "markers",
-                marker_size = proposal_marker_size,
-                hovertemplate = 'SRU/ASE (Nov 30):<br>$%{x:.2f}<extra>%{y}</extra>',
-                marker_color=sru_nov30_dot_color)
+                hovertemplate = 'UC Mediated (Dec 15):<br>$%{x:,.2f}<extra>%{y}</extra>',
+                marker_color=uc_dec15_dot_color)
 )
 
 fig_proposal.add_trace(go.Scatter(
@@ -262,10 +253,29 @@ fig_proposal.add_trace(go.Scatter(
                 y=proposal_y,
                 mode = "markers",
                 marker_size = proposal_marker_size,
-                hovertemplate = 'SRU/ASE (Nov 14):<br>$%{x:.2f}<extra>%{y}</extra>',
+                hovertemplate = 'SRU/ASE (Nov 14):<br>$%{x:,.2f}<extra>%{y}</extra>',
                 marker_color=sru_nov14_dot_color)
 )
 
+fig_proposal.add_trace(go.Scatter(
+                name='SRU/ASE (Nov 30)',
+                x=proposal_x_sru_nov30,
+                y=proposal_y,
+                mode = "markers",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'SRU/ASE (Nov 30):<br>$%{x:,.2f}<extra>%{y}</extra>',
+                marker_color=sru_nov30_dot_color)
+)
+
+fig_proposal.add_trace(go.Scatter(
+                name='SRU/ASE (Dec 8)',
+                x=proposal_x_sru_dec8,
+                y=proposal_y,
+                mode = "markers",
+                marker_size = proposal_marker_size,
+                hovertemplate = 'SRU/ASE (Dec 8):<br>$%{x:,.2f}<extra>%{y}</extra>',
+                marker_color=sru_dec8_color)
+)
 
 if len(proposal_y) < 6:
     fig_proposal.update_layout(height = 400)
@@ -415,10 +425,10 @@ app.layout = html.Div(
             html.H4('UAW vs UC Base Pay Proposals'),
             dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),
             html.P(),
-            html.P('These base pays would be effective starting Oct 2023.'),
-            html.P("These base pays assume a 12-month appointment."),
-            html.P("Current data reflects proposals from Nov 30 (UAW) and Dec 8 (UC). We will be updating the tracker as proposed wages are verified."),
-            dcc.Markdown("Proposed base pay calculated using [this](https://docs.google.com/spreadsheets/d/1rAva2zX-_qGTWccOB1mLKaZbQnbSejW2PQX5UwaDy74/edit#gid=304910910) and [this](https://drive.google.com/file/d/1FveulJ47nkcBUbSd4UczKuGnFM7A4snj/view)."),
+            html.P('These base pays would be effective starting Oct 2023 and assume a 12-month appointment.'),
+            html.P("Current data reflects proposals from Dec 8 (UAW) and Dec 15 (UC). We will be updating the tracker as proposed wages are verified."),
+            dcc.Markdown("This plot aims to visualize the movement on a central bargaining issue over the course of negotiations between the two bargaining parties."),
+            dcc.Markdown("As a disclaimer, the data used in the visualization summarizes base wage proposals using information that is most generalizable across all grad workers and does not reflect details like campus-based adjustments and new experience-based increments. For complete details, please see the bargaining update documents from [FairUCNow](https://www.fairucnow.org/bargaining/)."),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             dcc.Markdown('Select a position from the options below or searching for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year.'),
