@@ -428,7 +428,7 @@ app.layout = html.Div(
             html.P('These base pays would be effective starting Oct 2023 and assume a 12-month appointment.'),
             html.P("Current data reflects proposals from Dec 8 (UAW) and Dec 15 (UC). We will be updating the tracker as proposed wages are verified."),
             dcc.Markdown("This plot aims to visualize the movement on a central bargaining issue over the course of negotiations between the two bargaining parties."),
-            dcc.Markdown("As a disclaimer, the data used in the visualization summarizes base wage proposals using information that is most generalizable across all grad workers and does not reflect details like campus-based adjustments and new experience-based increments. For complete details, please see the bargaining update documents from [FairUCNow](https://www.fairucnow.org/bargaining/)."),
+            dcc.Markdown("As a disclaimer, the data used in the visualization summarizes base wage proposals using information that is most generalizable across all grad workers. The visualization does not reflect details like campus-based adjustments and new experience-based increments. For complete proposal details, please see the bargaining update documents from [FairUCNow](https://www.fairucnow.org/bargaining/)."),
             html.Hr(),
             html.H4('How does your compensation stack up against other UC employees?'),
             dcc.Markdown('Select a position from the options below or searching for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year.'),
