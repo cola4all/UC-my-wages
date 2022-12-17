@@ -425,7 +425,7 @@ app.layout = html.Div(
                 dbc.Col(dcc.Graph(id=ids.PROPOSAL_LOLLIPOP_PLOT, figure=fig_proposal, config={'displayModeBar': False}),xl=9,lg=12),
                 dbc.Col([
                     html.P(),
-                    html.P('These base pays would be effective starting Oct 2023 and assume a 12-month appointment.'),
+                    html.P("These base pays would be effective starting Oct 2023 and assume a 12-month appointment (although a 12-month appt is not guaranteed for ASE's)."),
                     html.P("Current data reflects proposals from Dec 8 (UAW) and Dec 15 (UC). We will be updating the tracker as proposed wages are verified."),
                     dcc.Markdown("This plot aims to visualize the movement on a central bargaining issue over the course of negotiations between the two bargaining parties."),
                     dcc.Markdown("As a disclaimer, the data used in the visualization summarizes base wage proposals using information that is most generalizable across all grad workers. The visualization does not reflect details like campus-based adjustments and new experience-based increments. For complete proposal details, please see the bargaining update documents from [FairUCNow](https://www.fairucnow.org/bargaining/)."),
