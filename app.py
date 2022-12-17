@@ -8,7 +8,7 @@ import pandas as pd
 import os, pathlib
 import time
 
-app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_stylesheets=[dbc.themes.FLATLY], assets_folder='assets',
+app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_stylesheets=[dbc.themes.FLATLY, dbc.icons.BOOTSTRAP], assets_folder='assets',
         meta_tags=[{
             'name': 'viewport',
             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'        
@@ -598,7 +598,15 @@ app.layout = html.Div(
                 active_item=[]
             ),
             html.Hr(),
-            dcc.Markdown('''##### **[#UCMyWages](https://twitter.com/search?q=UCMyWages&src=typeahead_click&f=top)**'''),
+            dbc.Row(
+                [
+                dbc.Col(html.P("Follow us!", style={"margin-bottom":"0", "font-size":"1.2rem"}), width="auto"),
+                dbc.Col(html.A(html.I(className="bi bi-twitter", style={"font-size":"1.5rem"}), href="https://twitter.com/collthinking420"), width="auto"),
+                dbc.Col(html.A(html.I(className="bi bi-reddit", style={"color":"#FF4300", "font-size":"1.5rem"}),href="https://www.reddit.com/user/collective_thinking/"), width="auto")],
+                class_name = "gx-2",
+                align="center"
+            ),
+            html.A("#UCMyWages", href="https://twitter.com/search?q=UCMyWages&src=typeahead_click&f=top", style={"text-decoration":"none", "font-size":"1.2rem"}),
             dbc.Modal(
                 children = [
                     dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
