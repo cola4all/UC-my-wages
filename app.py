@@ -380,22 +380,43 @@ name_add_container = html.Div(
 
 
 
-navbar = dbc.Navbar(
-    dbc.Container(
-        [
+navbar = dbc.Navbar([dbc.Container(
+        dbc.Row(dbc.Col(
             html.A(
-                dbc.NavbarBrand("UC My Wages", style={"font-size": "1.5rem"}),
+                dbc.NavbarBrand("UC My Wages", style={"font-size": "1.5rem", "max-width": "none"}),
                 href="#",
                 style={"textDecoration": "none"},
-            )
-        ],
+            ),
+        )
+        ),
         id="navbar-brand-container"
-    ),
+    )],    
     color="#005581",
     dark=True,
     sticky='top',
     className = "navbar"
 )
+
+# navbar = dbc.Navbar([dbc.Container(
+#         [dbc.Row(dbc.Col(
+#             html.A(
+#                 dbc.NavbarBrand("UC My Wages", style={"font-size": "1.5rem", "max-width": "none"}),
+#                 href="#",
+#                 style={"textDecoration": "none"},
+#             ),
+#         )
+#         ),
+#         dbc.Row(html.P()),
+#         dbc.Row([dbc.Col(dbc.Button("plot controls"))])],
+#         class_name="flex-md-column",
+#     )],
+    
+#     color="#005581",
+#     dark=True,
+#     sticky='top',
+#     className = "navbar",
+#     style={"padding-bottom": "0", "padding-top": "0.25rem"}
+# )
 
 t0 = time.time()
 print('creating layout:')
@@ -712,7 +733,8 @@ def search_names(n_clicks, search_name, dff_names):
                 columns = [{"name": DataSchema.NAME, "id": DataSchema.NAME}, {"name": 'Years Available', "id": 'Years Available'}],
                 active_cell = {'column': 0, 'row': 0},
                 selected_cells = [{'column': 0, 'row': 0}],
-                id = ids.NAME_SEARCH_RESULTS_TABLE
+                id = ids.NAME_SEARCH_RESULTS_TABLE,
+                style_data={'whiteSpace': 'normal'}
             )
         ]
     )
