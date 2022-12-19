@@ -14,16 +14,22 @@ hr {
     border-top: 2px solid #00A3AD;
 }
 
-.app-div{
-    margin: 0;
-    padding: 0;
-    width: 100%;
-} 
+
 
 #navbar-brand-container {
     margin-left: 0rem;
     margin-right: 0rem;
 }
+
+
+.page-link:active {
+    background-color:#8fa6c9;
+    color: #fff
+}
+
+.page-link:hover {
+    background-color: rgb(186, 223, 186);
+  }
 
 .title-container {
     width: 100%;
@@ -150,11 +156,23 @@ hr {
 }
 
 .app-div {
-    padding: 0px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.content-div {
-    padding: 10px;
+.body-div {
+    padding: 0.8rem;
+    flex: 1;
+}
+
+.footer-div {
+    width: 100%;
+    padding: 0.8rem;
+    background-color:#1d4558
 }
 
 .data-table-div {
