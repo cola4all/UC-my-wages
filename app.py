@@ -54,19 +54,19 @@ navbar = dbc.Navbar(
     [
         dbc.Col(
             html.A(
-                dbc.NavbarBrand("UC My Wages", style={"font-size": "1.5rem"}),
+                dbc.NavbarBrand("UC My Wages", style={"font-size": "1.2rem"}),
                 href="#",
                 style={"textDecoration": "none"},
             ),
             width="auto",
-            style={"padding-left": "1rem"},
+            style={"padding-left": "1rem", "margin-right": "auto"},
         ),
         dbc.Col(
             dbc.Nav(
                 [
-                    dbc.NavLink("Dashboard", href="/dashboard", style={"padding": "0.5rem"}, className="page-link"),
-                    html.Hr(style={"height":"1.8rem", "margin":"0", "padding":"0", "align-self":"center", "border":"0.05rem solid #E3F9FA", "opacity":"0.25"}),
-                    dbc.NavLink("Data Viz", href="/", style={"padding": "0.5rem"}, className="page-link")
+                    dbc.NavItem(dbc.NavLink("Dashboard", href="/dashboard", active = "exact", className="page-link", style={"padding-left": ".5rem", "padding-right": ".5rem"})),
+                    #html.Hr(style={"height":"1.8rem", "margin":"0", "padding":"0", "align-self":"center", "border":"0.05rem solid #E3F9FA", "opacity":"0.25"}),
+                    dbc.NavItem(dbc.NavLink("Data Viz", href="/", active = "exact", className="page-link", style={"padding-left": ".5rem", "padding-right": ".5rem"}))
                 ],
                 #vertical=False     # this doesn't behave as expected; so overwrite flex-direction and padding instead
                 style={"flex-direction": "row"},
@@ -75,13 +75,15 @@ navbar = dbc.Navbar(
             width="auto",
             style={"margin-left": "auto", "padding-right": "1rem"}
         ),
+        # dbc.Col(dcc.Link("Dashboard", href="/dashboard", style={"padding": "0.5rem"}, className="page-link"), width="auto"),
+        # dbc.Col(dcc.Link("Data Viz", href="/", style={"padding": "0.5rem"}, className="page-link"), style={"padding-right": "1rem"}, width="auto"),
     ],
     class_name="mx-0",
     color="#005581",
     dark=True,
     sticky='top',
     className = "navbar",
-    style={"padding-bottom": "0.25rem", "padding-top": "0.25rem"}
+    style={"padding-bottom": "0", "padding-top": "0"}
 )
 
 app.layout = html.Div([navbar,
