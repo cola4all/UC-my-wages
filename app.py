@@ -137,8 +137,6 @@ def close_modal(n_clicks):
 
 
 
-
-
 # run script
 if __name__ == '__main__':
      app.run_server(debug=True)

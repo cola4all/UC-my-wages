@@ -14,7 +14,25 @@ hr {
     border-top: 2px solid #00A3AD;
 }
 
+/* restyle radio items */
+.radio-group .form-check {
+    padding-left: 0;
+}
 
+.radio-group .btn-group > .form-check:not(:last-child) > .btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+  
+.radio-group .btn-group > .form-check:not(:first-child) > .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: -1px;
+}
+
+.form-check-inline {
+    margin-right: 0;
+}
 
 #navbar-brand-container {
     margin-left: 0rem;
