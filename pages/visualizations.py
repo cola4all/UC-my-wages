@@ -29,7 +29,7 @@ class colors:
 t0 = time.time()
 print('reading csv 3:')
 df_universities = pd.read_csv(UNIVERSITIES_DATA_PATH)
-df_living_wage = pd.read_csv(LIVING_WAGE_DATA_PATH)
+df_fmr = pd.read_csv(LIVING_WAGE_DATA_PATH)
 UC_list = ["UC Merced", "UC Riverside", "UC Davis", "UC Los<br>Angeles<br>", "UC San Diego", "UC Berkeley", "UC Irvine", "UC Santa<br>Barbara<br>", "UC Santa<br>Cruz<br>", "UC San<br>Francisco<br>"]
 UC_list.reverse()
 print(time.time() - t0)
@@ -59,7 +59,7 @@ def reset_fig_universities():
             fixedrange = True, automargin = True,
             title_standoff = 15
         ),
-        margin = dict(autoexpand = True, r=0, t=0, b=40, l=10),
+        margin = dict(autoexpand = True, r=0, t=40, b=40, l=10),
         dragmode = False,   
     )
 
@@ -72,7 +72,7 @@ fig_universities = reset_fig_universities()
 
 universities_comparison_div = html.Div(
     [
-        html.H4('How does our tentative agreement compare to other grad worker union contracts?'),
+        html.H4('How does our tentative agreement relate to rent burden?'),
         dbc.Row([
             dbc.Col(
                 [
@@ -122,7 +122,7 @@ universities_comparison_div = html.Div(
                                                 dbc.RadioItems(
                                                     options=[
                                                         {"label": "Wage", "value": 1},
-                                                        {"label": "Wage-to-Living Wage", "value": 2},
+                                                        {"label": "Rent Burden", "value": 2},
                                                     ],
                                                     id="wage-type-radio-items",
                                                     className="btn-group",
@@ -145,8 +145,8 @@ universities_comparison_div = html.Div(
                         ),
                         dbc.Popover(
                             [
-                                dbc.PopoverBody("The Wage option plots the actual wage based on published pay scale charts.", style={"padding-bottom":".25rem"}),
-                                dbc.PopoverBody("The Wage-to-Living Wage option plots the actual wage divided by the local (county-level) living wage obtained from MIT Living Wage Calculator.", style={"padding-top":".25rem"})
+                                dbc.PopoverBody("Wage plots the actual monthly wage for each step as stimulated in the tentative agreement.", style={"padding-bottom":".25rem"}),
+                                dbc.PopoverBody("Rent Burden plots the local monthly rent (determined as fair market rate from HUD dataset) as a percentage of monthly rent.",style={"padding-top":".25rem"})
                             ],
                             target="wages-type-info", placement="bottom", trigger="legacy"
                         ),
@@ -199,8 +199,7 @@ universities_comparison_div = html.Div(
                 [
                     html.P(),
                     html.H5("How to use this chart:"),
-                    dcc.Markdown("Each data point corresponds to the base wage for each step in the university's pay scale. Hover over each data point to view details. In our view, the most informative data point to compare across campuses is the **minimum monthly wage (the largest data points)**."),
-                    dcc.Markdown("*Some but not all* of the base pays at higher pay scales are also plotted (the smaller data points). The policy for classifying grad workers at higher pay scales varies across universities, and departments often pay more than the contractually obligated minimum base wage. As such, it is difficult to draw general conclusions by comparing the base pay at higher pay scales across universities."),
+                    dcc.Markdown("Each data point corresponds to the base wage for a step in the university's pay scale. Hover over each data point to view details. In the Rent Burden plot, the yellow band corresponds to the Rent Burdened range and the red band corresponds to the Extreme Rent Burdened range, as defined by the department of HUD. Toggle the dates to see how your rent burden changes with each raise specified in the tentative agreement."),
                 ], 
                 class_name="align-self-end"
             )
@@ -211,18 +210,10 @@ universities_comparison_div = html.Div(
             [
                 dbc.Col(
                     [
-                        html.H5("Why did we build this chart?"),
-                        dcc.Markdown("The Union has touted the gains in the tentative agreement as *historic*, citing the relative % wage increase compared to othe grad unions (see image)."),
-                        dcc.Markdown("However, what matters to grad workers is **not** relative % wage increase, but the real monthly wage and how it relates to local housing costs. **The Wage-to-Living Wage** chart aims to visualize how far our actual wages are from a living wage. The green dashed line denotes the point at which Actual Wage matches Living Wage."),
-                        dcc.Markdown("While this tentative agreement brings some UC grad workers closer to parity with our peers at other universities, we would need to wait 2.5 years, and a substantial portion of our Union membership would still experience extreme rent burden."),
+                        html.H5("Data source and calculations:"),
+                        dcc.Markdown("The rent burden calculation is based on the 40th percentile fair market rate for renting a 1-bedroom apartment at each campus' locality (data source: [U.S. Department of Housing and Urban Development](https://www.huduser.gov/portal/datasets/fmr.html)). For Apr 2023, we used the 2023 fair market rent. We projected the fair market rent for Oct 2023 to Oct 2024 using the 5-year average annual increase in rent (6.78%). Thank you to those who compiled [the data](https://docs.google.com/spreadsheets/d/1sJ4sU8y6hD1EqgMB5nKjvjVeAUDIcsm3yT8c9kaIvks/edit#gid=0) for HUD's fair market rate. The monthly wage for each step is stipulated in the tentative agreement tables: [ASEs](https://docs.google.com/spreadsheets/d/1yw3tehPnOz6girjThLt7CTJAqyLOA8LF/edit#gid=897821721), [GSRs](https://drive.google.com/file/d/1yslPwqC9rBKao2flYmEdSM7pRAXCb-Ib/view)")
                     ],
-                    md=8,sm=12
-                ),
-                dbc.Col(
-                    [
-                        dbc.Row(html.Img(src=IMAGE_PATH, style={"width":"100%"})),
-                        dbc.Row(dcc.Markdown("[UAW Graphic](https://www.fairucnow.org/ta-summary/) comparing the % wage increase of union contracts at peer institutions.", style={"font-size":"0.9rem"}))
-                    ]
+                    width=12
                 ),
             ]
         ),
@@ -231,15 +222,14 @@ universities_comparison_div = html.Div(
             [
                 dbc.Col(
                     [
-                        html.H5("Data Source and Limitations"),
-                        dcc.Markdown("The Actual Wage to Living Wage ratio roughly approximates monthly wages accounting for cost of living based on locality. We divided the actual monthly wage by the living wage of the county that the school is located in, as determined by the [MIT Living Wage Calculator](https://livingwage.mit.edu/). To project Living Wage for Oct 2023 and Oct 2024, we assumed a conservative 2% increase in living expenses for each year."),
-                        dcc.Markdown("One caveat is that the Living Wage is a county-wide measure, and the size of the counties vary greatly between schools. For example, the Living Wage for UCLA includes all of LA County, whereas the Living Wage for Columbia only includes New York County (which is just Manhattan). A more localized measure of cost of living (e.g., median rent in the immediate neighborhood) would be more accurate but would take more time to collate."),
-                        dcc.Markdown("The data sources comes from official HR documents or union contracts: [UC ASE tentative agreement](https://docs.google.com/spreadsheets/d/1yw3tehPnOz6girjThLt7CTJAqyLOA8LF/edit#gid=897821721), [UC GSR tentative agreement](https://drive.google.com/file/d/1yslPwqC9rBKao2flYmEdSM7pRAXCb-Ib/view), [Harvard contract](https://harvardgradunion.org/wp-content/uploads/2022/02/Clean-version-of-new-CBA-no-red-lines-1-25-22.pdf), [Columbia minimum pay](https://studentbenefits.provost.columbia.edu/content/compensation-and-student-employee-benefits), and [University of Washington contract](https://hr.uw.edu/labor/academic-and-student-unions/uaw-ase/ase-contract)")
+                        html.H5("Does this contract reduce or increase rent burden for you?"),
+                        dcc.Markdown("Even after realizing the full extent of our raises in 2.5 years, the vast majority of grad worker employees will still be classified as rent burdened or extreme rent burdened (according to [HUD's definition](https://www.federalreserve.gov/econres/notes/feds-notes/assessing-the-severity-of-rent-burden-on-low-income-families-20171222.html)). For GSR's, **rent burden increases over the life of this contract** because these raises do not match the average yearly increases in rent over the past 5 years.")
                     ],
                     width=12
                 ),
             ]
-        )
+        ),
+
     ]
 )
 
@@ -454,11 +444,17 @@ def update_fig_universities(radio_value, wage_value, date_value):
     elif radio_value==2:
         position = "ASE"
 
-    if wage_value==1:
-        wage = "Wage"
-    elif wage_value==2:
-        fig_universities.add_vline(x=1,line_width=2, line_dash="dash", line_color="#4D7E40")
-        wage = "Wage-to-Rent"
+
+    if wage_value==2:
+        fig_universities.add_vrect(x0=0,x1=30,fillcolor="#00A724", opacity=.2)
+        fig_universities.add_vrect(x0=30,x1=50,fillcolor="#FAD000", opacity=.2)
+        fig_universities.add_vrect(x0=50,x1=120,fillcolor="#760000", opacity=.2)
+
+        fig_universities.add_vline(x=30,line_width=4, line_dash="dash", line_color="grey")
+        fig_universities.add_vline(x=50,line_width=4, line_dash="dash", line_color="grey")
+
+        fig_universities.add_annotation(yref='paper',x=40,y=1.07,text="Rent<br>Burdened", showarrow=False),
+        fig_universities.add_annotation(yref='paper',x=80,y=1.07,text="Extreme Rent<br>Burdened", showarrow=False),         
 
     if date_value==1:
         date = "Apr 2023"
@@ -468,7 +464,12 @@ def update_fig_universities(radio_value, wage_value, date_value):
         date = "Oct 2024"
 
     WAGE_COLUMN = date + " (monthly)"
-    LIVING_WAGE_COLUMN = date + " (living monthly wage)"
+    if wage_value == 1:
+        WAGE_COLUMN_ADJUSTED = WAGE_COLUMN
+    elif wage_value == 2:
+        WAGE_COLUMN_ADJUSTED = "Adjusted " + date + " (monthly)"
+
+    LIVING_WAGE_COLUMN = date + " (FMR 2br shared)"
 
     dff_universities = df_universities[df_universities['Position']==position]
 
@@ -485,53 +486,53 @@ def update_fig_universities(radio_value, wage_value, date_value):
 
         # determine which logical array to use
         if wage_value == 1:
-            living_wage_adj = 1
             logical_array = dff_universities['School']==school
             hovertemplate = '%{customdata[0]}<br>$%{x:,.2f}<extra></extra>'
         elif wage_value == 2:
-            living_wage_adj = df_living_wage.loc[df_living_wage['School']==school,LIVING_WAGE_COLUMN].iloc[0]
-            hovertemplate = '%{customdata[0]}<br>%{x:,.2f}<extra></extra>'
+            hovertemplate = '%{customdata[0]}<br>%{x:,.2f}%<extra></extra>'
             if "UC " in school:
                 if position == "ASE":
-                    if df_living_wage.loc[df_living_wage['School']==school,'Tier'].iloc[0] == 1:
+                    if df_fmr.loc[df_fmr['School']==school,'Tier'].iloc[0] == 1:
                         logical_array = dff_universities['School']=="UC Tentative<br>Agreement<br>(Tier 1 Campus)<br><br>"
-                    elif df_living_wage.loc[df_living_wage['School']==school, 'Tier'].iloc[0] == 2:
+                    elif df_fmr.loc[df_fmr['School']==school, 'Tier'].iloc[0] == 2:
                         logical_array = dff_universities['School']=="UC Tentative<br>Agreement<br>(Tier 2 Campus)<br><br>"
                 elif position == "GSR":
                     logical_array = dff_universities['School']=="UC Tentative<br>Agreement<br>"
             else:
-                logical_array = dff_universities['School']==school      
+                logical_array = dff_universities['School']==school
+            # switch WAGE COLUMN from wage to rent/wage
+            dff_universities[WAGE_COLUMN_ADJUSTED] = df_fmr.loc[df_fmr['School']==school,LIVING_WAGE_COLUMN].iloc[0]/dff_universities[WAGE_COLUMN]*100
         
 
         if sum(logical_array) > 1:          # only plot line if more than 1 data point available
             fig_universities.add_trace(go.Scatter(
                         showlegend=False,
                         mode = "lines",
-                        x = dff_universities.loc[logical_array, WAGE_COLUMN]/living_wage_adj,
+                        x = dff_universities.loc[logical_array, WAGE_COLUMN_ADJUSTED],
                         y = [school]*sum(logical_array),
                         hoverinfo='skip',
                         line=dict(color = dff_universities.loc[logical_array,"Line Color"].iloc[0], width=2)))
 
-        minimum_logical_array = logical_array & (dff_universities['Minimum'] == 1)
+        minimum_logical_array = logical_array & (dff_universities['Min or Max'] == 1)
         customdata = np.stack((dff_universities.loc[minimum_logical_array,'Step'], dff_universities.loc[minimum_logical_array,'Position']), axis=-1)
         fig_universities.add_trace(go.Scatter(
                     showlegend=False,
                     mode = "markers",
                     marker_symbol = "circle",
-                    x = dff_universities.loc[minimum_logical_array , WAGE_COLUMN]/living_wage_adj,
+                    x = dff_universities.loc[minimum_logical_array , WAGE_COLUMN_ADJUSTED],
                     y = [school]*sum(minimum_logical_array),
                     customdata=customdata,                
                     hovertemplate = hovertemplate,
-                    marker=dict(color = dff_universities.loc[minimum_logical_array ,"Marker Color"].iloc[0],size=10)))
+                    marker=dict(color = dff_universities.loc[minimum_logical_array ,"Marker Color"].iloc[0],size=8)))
 
-        non_minimum_logical_array = logical_array & (dff_universities['Minimum'] == 0)
+        non_minimum_logical_array = logical_array & (dff_universities['Min or Max'] == 0)
         customdata = np.stack((dff_universities.loc[non_minimum_logical_array,'Step'], dff_universities.loc[non_minimum_logical_array,'Position']), axis=-1)
         if sum(non_minimum_logical_array) > 0:          # only plot line if more than 0 data point available
             fig_universities.add_trace(go.Scatter(
                         showlegend=False,
                         mode = "markers",
                         marker_symbol = "circle",
-                        x = dff_universities.loc[non_minimum_logical_array , WAGE_COLUMN]/living_wage_adj,
+                        x = dff_universities.loc[non_minimum_logical_array , WAGE_COLUMN_ADJUSTED],
                         y = [school]*sum(non_minimum_logical_array),
                         customdata=customdata,                
                         hovertemplate = hovertemplate,
@@ -539,9 +540,9 @@ def update_fig_universities(radio_value, wage_value, date_value):
 
     # fix the range of the x axes depending on the type of wages used
     if wage_value == 1:
-        fig_universities.update_xaxes(range=[0,5000], title = dict(text = "Monthly Wage (USD)"))
+        fig_universities.update_xaxes(range=[0,5000], tickprefix = '$', title = dict(text = "Monthly Wage (USD)"))
     elif wage_value == 2:
-        fig_universities.update_xaxes(range=[0,1.55], title = dict(text = "Actual Wage to Living Wage"))
+        fig_universities.update_xaxes(range=[0,120], ticksuffix = '%', title = dict(text = "Rent Burden (Rent as a % of Monthly Wage)"))
 
     # dynamically adjust height of plot
     if len(unique_schools) < 6:
