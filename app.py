@@ -105,12 +105,11 @@ app.layout = html.Div([navbar,
     ),
     dbc.Modal(
         children = [
-            dbc.ModalHeader(dbc.ModalTitle("UC My Wages")),
+            dbc.ModalHeader(dbc.ModalTitle("Welcome to UC My Wages!")),
             dbc.ModalBody(
                 children = [
-                    dcc.Markdown("Welcome!"),
-                    dcc.Markdown("In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation."),
-                    dcc.Markdown("This app is a pet project under active development, so please bear with me as I continue to make improvements.")
+                    dcc.Markdown("In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation. Use our **Dashboard** to look up the annual salary of any UC employee over the last 10 years."),
+                    dcc.Markdown("We are also actively updating our **Data Viz** page, which includes data visualizations that provide some context to the bargaining info between the UC and its grad worker unions.")
                 ]
             ),
             dbc.ModalFooter(
