@@ -64,7 +64,7 @@ def reset_fig_universities():
     )
 
     fig_universities.update_layout(template=universities_template)
-    fig_universities.update_xaxes(showspikes=True, spikecolor="gray", spikemode="across", spikethickness=2)
+    #fig_universities.update_xaxes(showspikes=True, spikecolor="gray", spikemode="across", spikethickness=1)
 
     return fig_universities
 
@@ -211,7 +211,7 @@ universities_comparison_div = html.Div(
                 dbc.Col(
                     [
                         html.H5("Data source and calculations:"),
-                        dcc.Markdown("The rent burden calculation is based on the 40th percentile fair market rate for renting a 1-bedroom apartment at each campus' locality (data source: [HUD](https://www.huduser.gov/portal/datasets/fmr.html)). For Apr 2023, we used the 2023 fair market rent. We projected the fair market rent for Oct 2023 to Oct 2024 using the 5-year average annual increase in rent (6.78%). Thank you to those who compiled the [UC-specific data](https://docs.google.com/spreadsheets/d/1sJ4sU8y6hD1EqgMB5nKjvjVeAUDIcsm3yT8c9kaIvks/edit#gid=0) for HUD's fair market rate. The monthly wage for each step is stipulated in the tentative agreement tables: [ASEs](https://docs.google.com/spreadsheets/d/1yw3tehPnOz6girjThLt7CTJAqyLOA8LF/edit#gid=897821721), [GSRs](https://drive.google.com/file/d/1yslPwqC9rBKao2flYmEdSM7pRAXCb-Ib/view)")
+                        dcc.Markdown("The rent burden calculation is based on the 40th percentile fair market rate for renting a 1-bedroom apartment at each campus' locality (data source: [HUD](https://www.huduser.gov/portal/datasets/fmr.html)). For Apr 2023, we used the 2023 fair market rent. We projected the fair market rent for Oct 2023 to Oct 2024 using the 5-year average annual increase in rent (6.78%). Note that the HUD's fair market rents are estimates based on pre-pandemic economic trends. Real time economic data suggests these estimates are below current market conditions, meaning that the actual rent burden may be greater than what is plotted. Thank you to those who compiled HUD's [fair market rate for UC campuses](https://docs.google.com/spreadsheets/d/1sJ4sU8y6hD1EqgMB5nKjvjVeAUDIcsm3yT8c9kaIvks/edit#gid=0). The monthly wage for each step can be found in the tentative agreement tables: [ASEs](https://docs.google.com/spreadsheets/d/1yw3tehPnOz6girjThLt7CTJAqyLOA8LF/edit#gid=897821721), [GSRs](https://drive.google.com/file/d/1yslPwqC9rBKao2flYmEdSM7pRAXCb-Ib/view)")
                     ],
                     width=12
                 ),
