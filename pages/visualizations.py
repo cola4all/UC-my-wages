@@ -199,7 +199,7 @@ universities_comparison_div = html.Div(
                 [
                     html.P(),
                     html.H5("How to use this chart:"),
-                    dcc.Markdown("Each data point corresponds to the base wage for a step in the university's pay scale. Hover over each data point to view details. In the Rent Burden plot, the yellow band corresponds to the Rent Burdened range and the red band corresponds to the Extreme Rent Burdened range, as defined by the department of HUD. Toggle the dates to see how your rent burden changes with each raise specified in the tentative agreement."),
+                    dcc.Markdown("Each data point corresponds to the base wage for a step in the university's pay scale. Hover over each data point to view details. In the Rent Burden plot, the yellow band corresponds to the Rent Burdened range and the red band corresponds to the Extreme Rent Burdened range, as defined by the department of HUD. Toggle the dates to see how your rent burden moves through the life of the contract (note that this change is more noticeable when viewed on larger screens)."),
                 ], 
                 class_name="align-self-end"
             )
