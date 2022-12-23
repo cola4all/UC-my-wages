@@ -199,7 +199,7 @@ universities_comparison_div = html.Div(
                 [
                     html.P(),
                     html.H5("How to use this chart:"),
-                    dcc.Markdown("Each data point corresponds to the base wage for a step in the university's pay scale. Hover over each data point to view details. In the Rent Burden plot, the yellow band corresponds to the Rent Burdened range and the red band corresponds to the Extreme Rent Burdened range, as defined by the department of HUD. Toggle the dates to see how your rent burden moves through the life of the contract (note that this change is more noticeable when viewed on larger screens)."),
+                    dcc.Markdown("Each data point corresponds to the base wage for a step in the UC's tentative agreement pay scale. Hover over each data point to view details. In the Rent Burden plot, the yellow band corresponds to the Rent Burdened range and the red band corresponds to the Extreme Rent Burdened range (based on U.S. Department of Housing and Urban Development (HUD) definition of [rent burden](https://www.federalreserve.gov/econres/notes/feds-notes/assessing-the-severity-of-rent-burden-on-low-income-families-20171222.html)). Toggle the dates to see how your rent burden moves through the life of the contract (note that this change is more noticeable when viewed on larger screens)."),
                 ], 
                 class_name="align-self-end"
             )
@@ -211,7 +211,7 @@ universities_comparison_div = html.Div(
                 dbc.Col(
                     [
                         html.H5("Data source and calculations:"),
-                        dcc.Markdown("The rent burden calculation is based on the 40th percentile fair market rate for renting a 1-bedroom apartment at each campus' locality (data source: [U.S. Department of Housing and Urban Development](https://www.huduser.gov/portal/datasets/fmr.html)). For Apr 2023, we used the 2023 fair market rent. We projected the fair market rent for Oct 2023 to Oct 2024 using the 5-year average annual increase in rent (6.78%). Thank you to those who compiled [the data](https://docs.google.com/spreadsheets/d/1sJ4sU8y6hD1EqgMB5nKjvjVeAUDIcsm3yT8c9kaIvks/edit#gid=0) for HUD's fair market rate. The monthly wage for each step is stipulated in the tentative agreement tables: [ASEs](https://docs.google.com/spreadsheets/d/1yw3tehPnOz6girjThLt7CTJAqyLOA8LF/edit#gid=897821721), [GSRs](https://drive.google.com/file/d/1yslPwqC9rBKao2flYmEdSM7pRAXCb-Ib/view)")
+                        dcc.Markdown("The rent burden calculation is based on the 40th percentile fair market rate for renting a 1-bedroom apartment at each campus' locality (data source: [HUD](https://www.huduser.gov/portal/datasets/fmr.html)). For Apr 2023, we used the 2023 fair market rent. We projected the fair market rent for Oct 2023 to Oct 2024 using the 5-year average annual increase in rent (6.78%). Thank you to those who compiled the [UC-specific data](https://docs.google.com/spreadsheets/d/1sJ4sU8y6hD1EqgMB5nKjvjVeAUDIcsm3yT8c9kaIvks/edit#gid=0) for HUD's fair market rate. The monthly wage for each step is stipulated in the tentative agreement tables: [ASEs](https://docs.google.com/spreadsheets/d/1yw3tehPnOz6girjThLt7CTJAqyLOA8LF/edit#gid=897821721), [GSRs](https://drive.google.com/file/d/1yslPwqC9rBKao2flYmEdSM7pRAXCb-Ib/view)")
                     ],
                     width=12
                 ),
@@ -223,7 +223,7 @@ universities_comparison_div = html.Div(
                 dbc.Col(
                     [
                         html.H5("Does this contract reduce or increase rent burden for you?"),
-                        dcc.Markdown("Even after realizing the full extent of our raises in 2.5 years, the vast majority of grad worker employees will still be classified as rent burdened or extreme rent burdened (according to [HUD's definition](https://www.federalreserve.gov/econres/notes/feds-notes/assessing-the-severity-of-rent-burden-on-low-income-families-20171222.html)). For GSR's, **rent burden increases over the life of this contract** because these raises do not match the average yearly increases in rent over the past 5 years.")
+                        dcc.Markdown("Even after realizing the full extent of our raises in 2.5 years, the vast majority of grad worker employees will still be classified as rent burdened or extreme rent burdened. For GSR's, **rent burden increases over the life of this contract** because these raises do not match the average yearly increases in rent over the past 5 years.")
                     ],
                     width=12
                 ),
@@ -448,10 +448,10 @@ def update_fig_universities(radio_value, wage_value, date_value):
     if wage_value==2:
         fig_universities.add_vrect(x0=0,x1=30,fillcolor="#00A724", opacity=.2)
         fig_universities.add_vrect(x0=30,x1=50,fillcolor="#FAD000", opacity=.2)
-        fig_universities.add_vrect(x0=50,x1=120,fillcolor="#760000", opacity=.2)
+        fig_universities.add_vrect(x0=50,x1=120,fillcolor="#7F0000", opacity=.2)
 
-        fig_universities.add_vline(x=30,line_width=4, line_dash="dash", line_color="grey")
-        fig_universities.add_vline(x=50,line_width=4, line_dash="dash", line_color="grey")
+        fig_universities.add_vline(x=30,line_width=3, line_dash="dash", line_color="grey")
+        fig_universities.add_vline(x=50,line_width=3, line_dash="dash", line_color="grey")
 
         fig_universities.add_annotation(yref='paper',x=40,y=1.07,text="Rent<br>Burdened", showarrow=False),
         fig_universities.add_annotation(yref='paper',x=80,y=1.07,text="Extreme Rent<br>Burdened", showarrow=False),         
