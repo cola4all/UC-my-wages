@@ -87,17 +87,16 @@ navbar = dbc.Navbar(
                             href="/dashboard",
                             active="exact",
                             className="page-link",
-                            style={"padding-left": ".5rem", "padding-right": ".5rem"},
+                            #style={"padding-left": "1rem", "padding-right": "1rem", "border-radius": "2rem"},
                         )
                     ),
-                    # html.Hr(style={"height":"1.8rem", "margin":"0", "padding":"0", "align-self":"center", "border":"0.05rem solid #E3F9FA", "opacity":"0.25"}),
                     dbc.NavItem(
                         dbc.NavLink(
                             "Data Viz",
                             href="/",
                             active="exact",
                             className="page-link",
-                            style={"padding-left": ".5rem", "padding-right": ".5rem"},
+                            #style={"padding-left": "1rem", "padding-right": "1rem"},
                         )
                     ),
                 ],

@@ -39,25 +39,34 @@ hr {
     margin-right: 0rem;
 }
 
-.nav-pills .nav-link {
-    border-radius: 0;
+.navbar-dark .navbar-nav .nav-link {
+    color: #9fc7d8;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: #ffffff;
+    background-color: rgba(0,0,0,0);
 }
 
 .navbar-dark .navbar-nav .nav-link.active,
 .navbar-dark .navbar-nav .show>.nav-link {
-    color:#0b3157;
-    background-color: #a5bcd3;
+    color:#0b2c4f;
+    background-color: #7da6b9;
 }
 
-.page-link {
-    color: #fff;
-    padding: 0.6rem;
-    padding-left: .5rem;
-    font-size: 1rem;
+
+
+.nav-item {
+    margin: .6rem;
+    margin-left: .1rem;
+    margin-right: .1rem;
 }
 
-.page-link:hover {
-    background-color: #76a1b6;
+.nav-pills .nav-link {
+    border-radius: 2rem;
+    padding: .5rem;
+    padding-top: .2rem;
+    padding-bottom: .2rem;
 }
 
 .page-link:focus {
