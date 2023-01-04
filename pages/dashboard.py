@@ -637,7 +637,7 @@ def update_initial_wage_input(
 )
 def filter_names_data(names, title, COMPENSATION_TYPE):
 
-    if (names is None) or (names == []):
+    if (names is None):
         raise PreventUpdate
 
     # IMPORTANT when dealing with categories (cat.remove_unused_categories)
@@ -665,13 +665,11 @@ def filter_names_data(names, title, COMPENSATION_TYPE):
     Input(
         "filtered-names-data", "data"
     ),  # filtered names data triggers this chained callback
-    # Input('refresh-figures-button', 'n_clicks'),
     State("compensation-type-store", "data"),
-    # Input('compensation-accordion-item','title'),
     prevent_initial_call=False,
 )
 def filter_jobs_data(jobs, df_names_filtered, COMPENSATION_TYPE):
-    if (jobs is None) or (df_names_filtered == []):
+    if (jobs is None):
         raise PreventUpdate
 
     if df_names_filtered is not None:
@@ -1148,6 +1146,7 @@ def update_figures(
     df_lollipop = df_combined_filtered[
         df_combined_filtered[DataSchema.NAME].isin(names_wanted_in_projected_wages)
     ]  # df lollipop uses the same wanted names as projected wages
+    lollipop_chart_title = title = "Years: " + str(min_year) + "-" + str(max_year)
     if len(df_lollipop) > 0:
         df_lollipop = df_lollipop.pivot(
             index=DataSchema.NAME, columns=DataSchema.YEAR, values=COMPENSATION_TYPE
@@ -1196,14 +1195,12 @@ def update_figures(
             )
         )
 
-        lollipop_chart_title = title = "Years: " + str(min_year) + "-" + str(max_year)
-        # fig_lollipop.layout.template.layout.height = (len(lollipop_y)-5)*100+400
         if len(lollipop_y) < 6:
             fig_lollipop.update_layout(height=400)
         else:
             fig_lollipop.update_layout(
-                height=(len(lollipop_y) - 6) * 50 + 400
-            )  # increase height by 30px for each additional person past 5
+                height=(len(lollipop_y) - 6) * 50 + 400     # increase height by 30px for each additional person past 5
+            )  
     print("figure update: " + str(time.time() - t0))
     return (
         df_traces_in_real_wages.to_json(orient="split"),
