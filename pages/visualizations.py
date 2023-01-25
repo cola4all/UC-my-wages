@@ -21,7 +21,7 @@ import time
 import numpy as np
 
 
-register_page(__name__, path="/")
+register_page(__name__, path="/dataviz")
 
 APP_PATH = os.path.split(str(pathlib.Path(__file__).parent.resolve()))[
     0
@@ -629,7 +629,7 @@ layout = html.Div(
         html.Hr(),
         wage_proposal_div,
     ],
-    className="content-div",
+    className="body-div",
 )
 
 

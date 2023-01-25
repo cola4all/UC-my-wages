@@ -20,27 +20,37 @@ import plotly.graph_objects as go
 import pandas as pd
 
 
-# app = DashProxy(__name__, transforms=[ServersideOutputTransform()], external_stylesheets=[dbc.themes.FLATLY, dbc.icons.BOOTSTRAP], assets_folder='assets', use_pages=True,
-#         meta_tags=[{
-#             'name': 'viewport',
-#             'content': 'width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,'
-#         }]
-# )
-# app = DashProxy(__name__, external_stylesheets=[dbc.themes.FLATLY, dbc.icons.BOOTSTRAP], assets_folder='assets', use_pages=True)
-# register_page("another_home", layout=html.Div("We're home!"), path="/")
-
+META_TAGS = [
+    {
+        "name": "viewport",
+        "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,",
+    },
+    {
+        "name": "author",
+        "content": "Collective Thinking"
+    },
+    {
+        "name": "description",
+        "content": "A simple tool for searching and visualizing University of California employee wage data.",
+    },
+    {
+        "name": "title",
+        "content": "UC My Wages",
+    },
+]
 
 app = dash.Dash(
     __name__,
-    external_stylesheets=[dbc.themes.FLATLY, dbc.icons.BOOTSTRAP],
+    external_stylesheets = 
+    [
+        dbc.themes.FLATLY, 
+        dbc.icons.BOOTSTRAP, 
+        #'https://fonts.googleapis.com/css?family=Roboto',
+        #'https://fonts.googleapis.com/css2?family=Bitter&family=Roboto&display=swap',
+    ],
     assets_folder="assets",
     use_pages=True,
-    meta_tags=[
-        {
-            "name": "viewport",
-            "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,",
-        }
-    ],
+    meta_tags=META_TAGS,
 )
 server = app.server
 
@@ -49,7 +59,8 @@ app.index_string = """
 <!DOCTYPE html>
 <html>
     <head>
-        {%metas%}
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,200;0,300;0,500;0,700;1,700&family=Roboto&display=swap');        </style>         
         <title>UC My Wages</title>
         {%favicon%}
         {%css%}
@@ -71,51 +82,45 @@ navbar = dbc.Navbar(
     [
         dbc.Col(
             html.A(
-                dbc.NavbarBrand("UC My Wages", style={"font-size": "1.2rem"}),
-                href="#",
+                dbc.NavbarBrand("UC My Wages", style={"font-weight": "400", "font-family": "Bitter"}),
+                href="/",
                 style={"textDecoration": "none"},
             ),
             width="auto",
             style={"padding-left": "1rem", "margin-right": "auto"},
         ),
         dbc.Col(
+            [
             dbc.Nav(
                 [
                     dbc.NavItem(
-                        dbc.NavLink(
+                        html.A(
                             "Dashboard",
-                            href="/dashboard",
-                            active="exact",
-                            className="page-link",
-                            #style={"padding-left": "1rem", "padding-right": "1rem", "border-radius": "2rem"},
-                        )
+                            href="/#dashboard",
+                            className="page-link"
+                        ),
                     ),
                     dbc.NavItem(
-                        dbc.NavLink(
+                        html.A(
                             "Data Viz",
-                            href="/",
-                            active="exact",
+                            href="/dataviz",
                             className="page-link",
-                            #style={"padding-left": "1rem", "padding-right": "1rem"},
                         )
                     ),
                 ],
-                # vertical=False     # this doesn't behave as expected; so overwrite flex-direction and padding instead
                 style={"flex-direction": "row"},
                 pills=True,
-            ),
+            ),],
             width="auto",
             style={"margin-left": "auto", "padding-right": "1rem"},
         ),
-        # dbc.Col(dcc.Link("Dashboard", href="/dashboard", style={"padding": "0.5rem"}, className="page-link"), width="auto"),
-        # dbc.Col(dcc.Link("Data Viz", href="/", style={"padding": "0.5rem"}, className="page-link"), style={"padding-right": "1rem"}, width="auto"),
     ],
     class_name="mx-0",
-    color="#005581",
+    color="#1d4558",
     dark=True,
     sticky="top",
     className="navbar",
-    style={"padding-bottom": "0", "padding-top": "0"},
+    style={"padding-bottom": "0", "padding-top": "0", "z-index": "4"},
 )
 
 app.layout = html.Div(
@@ -125,7 +130,7 @@ app.layout = html.Div(
             [
                 page_container,
             ],
-            className="body-div",
+            
         ),
         html.Div(
             [
@@ -182,38 +187,38 @@ app.layout = html.Div(
             ],
             className="footer-div",
         ),
-        dbc.Modal(
-            children=[
-                dbc.ModalHeader(dbc.ModalTitle("Welcome to UC My Wages!")),
-                dbc.ModalBody(
-                    children=[
-                        dcc.Markdown(
-                            "In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation. Use our **Dashboard** to look up the annual salary of any UC employee over the last 10 years."
-                        ),
-                        dcc.Markdown(
-                            "We are also actively updating our **Data Viz** page, which includes data visualizations that provide some context to the bargaining info between the UC and its grad worker unions."
-                        ),
-                    ]
-                ),
-                dbc.ModalFooter(dbc.Button("Close", id="close-modal-button")),
-            ],
-            is_open=True,
-            id="landing-modal",
-            centered=True,
-        ),
+        # dbc.Modal(
+        #     children=[
+        #         dbc.ModalHeader(dbc.ModalTitle("Welcome to UC My Wages!")),
+        #         dbc.ModalBody(
+        #             children=[
+        #                 dcc.Markdown(
+        #                     "In line with the [University of California's commitment to transparency and public accountability](https://ucannualwage.ucop.edu/wage/), this project aims to help the public search for and visualize the UC's data on employee compensation. Use our **Dashboard** to look up the annual salary of any UC employee over the last 10 years."
+        #                 ),
+        #                 dcc.Markdown(
+        #                     "We are also actively updating our **Data Viz** page, which includes data visualizations that provide some context to the bargaining info between the UC and its grad worker unions."
+        #                 ),
+        #             ]
+        #         ),
+        #         dbc.ModalFooter(dbc.Button("Close", id="close-modal-button")),
+        #     ],
+        #     is_open=True,
+        #     id="landing-modal",
+        #     centered=True,
+        # ),
     ],
     className="app-div",
 )
 
-# --------------- callback - close modal -------
-# triggered by pressing the close button
-@app.callback(
-    Output("landing-modal", "is_open"),
-    Input("close-modal-button", "n_clicks"),
-    prevent_initial_call=True,
-)
-def close_modal(n_clicks):
-    return False
+# # --------------- callback - close modal -------
+# # triggered by pressing the close button
+# @app.callback(
+#     Output("landing-modal", "is_open"),
+#     Input("close-modal-button", "n_clicks"),
+#     prevent_initial_call=True,
+# )
+# def close_modal(n_clicks):
+#     return False
 
 
 # run script

@@ -22,7 +22,7 @@ import pandas as pd
 import os, pathlib
 import time
 
-register_page(__name__)
+register_page(__name__, path="/")
 
 # define paths
 APP_PATH = os.path.split(str(pathlib.Path(__file__).parent.resolve()))[0]
@@ -84,20 +84,6 @@ df_jobs = pd.read_parquet(
 )  # need to create parquet file first
 print(time.time() - t0)
 
-# df_jobs = pd.read_csv(JOB_DATA_PATH,
-#     usecols=[
-#         DataSchema.NAME,
-#         DataSchema.TOTAL_PAY,
-#         DataSchema.TOTAL_PAY_AND_BENEFITS,
-#         DataSchema.YEAR],         # this col is used for sorting by names
-#     dtype={
-#         DataSchema.NAME: "category",
-#         DataSchema.TOTAL_PAY: float,
-#         DataSchema.TOTAL_PAY_AND_BENEFITS: float,
-#         DataSchema.YEAR: cat_type_year
-#     }
-# )
-
 
 t0 = time.time()
 print("reading csv 2:")
@@ -154,7 +140,73 @@ job_container = html.Div(
 #     ]
 # )
 
-# ------------- create year range slider components ----------------
+
+OFFCANVAS_NAV_STYLE = {
+    "position": "fixed",
+    "top": "-3rem",
+    "width": "100%",
+    "background-color": "#48a8d7",
+    "transition": "top 0.8s",
+    "z-index": "3",
+}
+
+offcanvas_nav = dbc.Nav(
+    [
+        dbc.Button(
+            [
+                html.I(
+                    className="bi bi-sliders",
+                    style={
+                        "color": "white",
+                        "font-size": "1rem",
+                        "margin-right": ".6rem",
+                    },
+                ),
+                "Plot Controls",
+            ],
+            id="open-offcanvas",
+            n_clicks=0,
+            class_name="button shadow-none",
+            style={
+                "border-radius": "0",
+                "outline": "none",
+                "background": "rgb(105, 167, 198)",
+                "border-style": "none",
+            },
+        ),
+    ],
+    vertical=True,
+    pills=True,
+    style=OFFCANVAS_NAV_STYLE,
+    class_name="fixed-top",
+    id="filter-navbar",
+)
+
+compensation_type_container = dbc.Row(
+    [
+        dbc.Col(
+            dbc.Label("Compensation Type:", style={"margin": "0"}),
+            width="auto",
+            id="compensation-type-label-container",
+        ),
+        dcc.Dropdown(
+            options=[
+                "Total Pay & Benefits",
+                "Total Pay",
+            ],
+            value="Total Pay",
+            multi=False,
+            clearable=False,
+            id="select-compensation-dropdown",
+        ),
+    ],
+    style={
+        "align-items": "stretch",
+        "justify-content": "flex-start",
+        "margin": "0",
+    },
+)
+
 year_range_slider = dcc.RangeSlider(
     min=2011,
     max=2021,
@@ -176,23 +228,60 @@ year_range_slider = dcc.RangeSlider(
     id=ids.YEAR_RANGE_SLIDER,
 )
 
+GRAY_BACKGROUND = "#ecf0f1"
+GRAY_OUTLINE = "#cccccc"
+year_range_container = dbc.Row(
+    [
+        dbc.Col(
+            dbc.Label("Year Range:", style={"margin": "0"}),
+            width="auto",
+            id="year-range-label-container",
+        ),
+        dbc.Col(
+            year_range_slider,
+            id="year-range-slider-container",
+        ),
+    ],
+    style={
+        "align-items": "stretch",
+        "justify-content": "flex-start",
+        "margin": "0",
+    },
+)
 
-# ------------- create name search components ----------------
-name_search_container = dbc.Col(
-    dbc.InputGroup(
-        id=ids.NAME_SEARCH_CONTAINER,
-        children=[
-            dbc.InputGroupText("Enter name:", id="enter-name-text"),
-            dbc.Input(id=ids.NAME_SEARCH_INPUT),
-            dbc.Button("Search", id=ids.NAME_SEARCH_BUTTON, className="button"),
-        ],
-    ),
-    id="name_search_container",
-    xxl=4,
-    xl=5,
-    lg=6,
-    md=9,
-    sm=12,
+add_positions_container = html.Div(
+    [
+        html.Div(
+            html.Span("Add Positions:"),
+            id="add-positions-label-container",
+        ),
+        dcc.Dropdown(
+            options=unique_jobs,
+            value=[
+                "GSR (Step 5)",
+                "Teaching Assistant",
+                "Assistant Professor (II)",
+                "Associate Professor (II)",
+                "Professor (II)",
+            ],
+            multi=True,
+            placeholder="select or search...",
+            id=ids.RATE_JOB_DROPDOWN,
+        ),
+    ],
+    style={"display": "flex", "flex-wrap": "wrap"},
+)
+
+name_search_container = html.Div(
+    [
+        dbc.Input(
+            id=ids.NAME_SEARCH_INPUT,
+            placeholder="enter an employee name...",
+            debounce=True,
+        ),
+        dbc.Button("Search", id="name-search-button", className="button"),
+    ],
+    style={"display": "flex", "flex-wrap": "nowrap"},
 )
 
 name_search_results_container = html.Div(
@@ -203,219 +292,303 @@ name_search_results_container = html.Div(
 )
 
 name_add_container = html.Div(
-    id=ids.NAME_ADD_CONTAINER,
-    children=[
+    [
         dbc.Button("Add Selected Name", id=ids.NAME_ADD_BUTTON, className="button"),
-        dcc.Dropdown(id=ids.NAME_ADDED_DROPDOWN, value=[], options=[], multi=True),
+        dcc.Dropdown(
+            id=ids.NAME_ADDED_DROPDOWN,
+            value=[],
+            options=[],
+            multi=True,
+            placeholder="add selected employee to plots...",
+        ),
     ],
+    id=ids.NAME_ADD_CONTAINER,
+    style={
+        "display": "flex",
+        "flex-wrap": "wrap",
+        "align-items": "stretch",
+    },
 )
+
+name_random_container = html.Div(
+    [
+        html.Div(
+            html.Span("Can't think of a name?"),
+            id="random-name-label-container",
+        ),
+        dbc.Button("Add Random Name", id="random-name-button", className="button"),
+    ],
+    id="name-random-container",
+    style={
+        "display": "flex",
+        "flex-wrap": "nowrap",
+        "align-items": "stretch",
+    },
+)
+
+add_employees_container = html.Div(
+    [
+        html.Div(
+            html.Span("Add Employees"),
+            id="add-employees-label-container",
+        ),
+        html.Div(
+            [
+                name_search_container,
+                html.P(),
+                name_search_results_container,
+                html.P(),
+                name_add_container,
+                html.P(),
+                #name_random_container,
+            ],
+            id="add-employees-body",
+            style={
+                "padding-left": "1rem",
+                "padding-right": "1rem",
+            },
+        ),
+    ],
+    style={"display": "flex", "flex-wrap": "wrap"},
+)
+
+OFFCANVAS_STYLE = {
+    "top": "5rem",
+    "width": "100%",
+    "height": "75%",
+    "z-index": "2",
+}
+
+offcanvas = dbc.Offcanvas(
+    [
+        compensation_type_container,
+        html.H1(),
+        year_range_container,
+        html.H1(),
+        add_positions_container,
+        html.H1(),
+        add_employees_container,
+    ],
+    id="offcanvas",
+    title="Plot Options",
+    is_open=False,
+    scrollable=True,
+    placement="top",
+    backdrop=True,  # need to create a transparent backdrop to be able to close by clicking offscreen
+    backdrop_class_name="offcanvas-backdrop",
+    style=OFFCANVAS_STYLE,
+)
+
+# dashboard filter
+filter_div = html.Div(
+    [
+        offcanvas,
+        offcanvas_nav,
+    ]
+)
+
+# hero section
+hero_div = html.Div(
+    [
+        html.H1(
+            [
+                " Bringing ",
+                html.Br(className="hero-header-breaks"),
+                html.Span("Pay Transparency ", style={"font-weight": "700", "color": "#82dee3"}),
+                html.Br(),
+                "to the ",
+                html.Br(className="hero-header-breaks"),
+                html.Span("University of California", style={"font-weight": "700"}),
+            ],
+            id="hero-header",
+        ),
+        html.Div(
+            html.P(
+                [
+                    " The UC discloses employee wage data as part of its effort to provide transparency in its use of public funds. ",
+                    #html.Br(className="hero-header-breaks"),
+                    "But raw numbers need context to bring about real transparency. ",
+                    html.Br(),
+                    html.Br(),
+                    "We make this possible by letting you visualize how employee wages compare to one another and change over time.",
+                ],
+                id="hero-text",
+            ),
+            id="hero-text-div",
+        ),
+        html.Div(
+            [
+                html.A("Explore Wages Dashboard", href="#dashboard", className="hero-button", id="hero-primary-button"),
+                html.A("View Data Viz Collection", href="/dataviz", className="hero-button", id="hero-secondary-button")
+            ],
+            id="hero-buttons-div"
+        ),
+    ],
+    id="hero-div",
+    style={
+        "display": "flex",
+        "flex-wrap": "wrap",
+        "justify-content": "center",
+        "color": "white",
+    },
+)
+
+# Knowing the wages of your bosses and peers is typically a taboo subject, and keeping this information hidden from employees is a way of reinforcing the power dynamics. Without this transparency, bosses can give preferential raises to themselves or their favorite employees, and not have to worry about accountability. The wages dashboard includes data from all UC employees - including facilities and hospitality workers, nurses, clerical workers, doctors, etc. some of these groups are unionized and when their negotiations with UC comes around, the tool can be a handy way to look at their wages in context. Also importantly, if UC managers know that their raises and their employee raises are being tracked, they will be more conscious about providing fair compensation throughout the system.
 
 # create layout
 layout = html.Div(
-    children=[
+    [
+        offcanvas_nav,
+        offcanvas,
+        hero_div,
         html.Div(
-            className="content-div",
             children=[
-                # data stores
-                dcc.Store(id="filtered-names-data"),
-                dcc.Store(id="filtered-jobs-data"),
-                dcc.Store(id="filtered-combined-data"),
-                dcc.Store(id="jobs-data"),
-                dcc.Store(id="names-data"),
-                dcc.Store(id="table-data-records-list"),
-                dcc.Store(id="traces-in-real-wages"),
-                dcc.Store(id="traces-in-projected-wages"),
-                dcc.Store(id="compensation-type-store"),
-                dcc.Interval(
-                    id="page-load-interval", n_intervals=0, max_intervals=0, interval=1
-                ),  # max_intervals = 0 ensures callback only runs once at startup
-                html.H4(
-                    "How does your compensation stack up against other UC employees?"
-                ),
-                dcc.Markdown(
-                    "Select a position from the options below or search for an employee by name to add to the plot. Hover or click on a data point to compare across all employees for that year."
-                ),
-                dbc.Accordion(
-                    children=[
-                        dbc.AccordionItem(
-                            children=[
-                                html.P("Select one of the following options:"),
-                                dbc.Row(
-                                    children=[
-                                        dbc.Col(
-                                            dcc.Dropdown(
-                                                options=[
-                                                    "Total Pay & Benefits",
-                                                    "Total Pay",
-                                                ],
-                                                value="Total Pay",
-                                                multi=False,
-                                                clearable=False,
-                                                id="select-compensation-dropdown",
-                                            ),
-                                            lg=4,
-                                            xl=3,
-                                        ),
-                                        dbc.Col(
-                                            dbc.Button(
-                                                "Refresh Figures",
-                                                id="refresh-figures-button",
-                                                className="button",
-                                            )
-                                        ),
-                                    ],
-                                    justify="center",
-                                    className="g-0",
-                                ),
-                            ],
-                            title="Selected Compensation: Total Pay",
-                            id="compensation-accordion-item",
-                        ),
-                        dbc.AccordionItem(
-                            children=[
-                                job_container,
-                            ],
-                            title="Compare Positions",
-                            id="compare-jobs-accordion-item",
-                        ),
-                        dbc.AccordionItem(
-                            children=[
-                                dcc.Loading(
-                                    id="name-container",
-                                    children=[
-                                        name_search_container,
-                                        html.P(),
-                                        name_search_results_container,
-                                        name_add_container,
-                                    ],
-                                ),
-                            ],
-                            title="Compare Employees",
-                        ),
-                    ],
-                    id="top-accordion",
-                    always_open=True,
-                    active_item=[
-                        "item-1",
-                        "item-2",
-                    ],  # this needs to be string id (not assigned id, which starts at 0)
-                ),
                 html.Div(
-                    [
-                        html.P(),
-                        dbc.Row(
+                    id="content-div",
+                    children=[
+                        # data stores
+                        dcc.Store(id="filtered-names-data"),
+                        dcc.Store(id="filtered-jobs-data"),
+                        dcc.Store(id="filtered-combined-data"),
+                        dcc.Store(id="jobs-data"),
+                        dcc.Store(id="names-data"),
+                        dcc.Store(id="table-data-records-list"),
+                        dcc.Store(id="traces-in-real-wages"),
+                        dcc.Store(id="traces-in-projected-wages"),
+                        dcc.Store(id="compensation-type-store"),
+                        dcc.Interval(
+                            id="page-load-interval",
+                            n_intervals=0,
+                            max_intervals=0,
+                            interval=1,
+                        ),  # max_intervals = 0 ensures callback only runs once at startup
+                        html.A(id="dashboard"),
+                        html.H4(
+                            "How does your compensation stack up against other UC employees?"
+                        ),
+                        dcc.Markdown(
+                            "Open the plot controls and search for UC employees by name to add them to the plots. You can also search for certain positions to plot their aggregated wage data. Hover or click on a data point to compare across all employees for that year."
+                        ),
+                        html.Div(
                             [
-                                dbc.Col(dbc.Label("linear"), className="pe-2"),
-                                dbc.Col(
-                                    dbc.Switch(
-                                        value=False, id="real-wages-scale-switch"
-                                    ),
-                                    className="p-0",
+                                html.P(),
+                                dbc.Row(
+                                    [
+                                        dbc.Col(dbc.Label("linear"), className="pe-2"),
+                                        dbc.Col(
+                                            dbc.Switch(
+                                                value=False,
+                                                id="real-wages-scale-switch",
+                                            ),
+                                            className="p-0",
+                                        ),
+                                        dbc.Col(dbc.Label("log"), className="p-0"),
+                                    ],
+                                    className="d-inline-flex g-0 align-items-start",
                                 ),
-                                dbc.Col(dbc.Label("log"), className="p-0"),
-                            ],
-                            className="d-inline-flex g-0 align-items-start",
+                            ]
                         ),
-                    ]
-                ),
-                dcc.Graph(
-                    id=ids.REAL_WAGES_LINE_PLOT,
-                    config={"displayModeBar": False},
-                    figure={"layout": {"autosize": True, "fillframe": True}},
-                ),
-                html.Hr(),
-                html.H4(
-                    "Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?"
-                ),
-                dcc.Markdown(
-                    "This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees. *Simply set your starting compensation below. You may also need to adjust the year range slider (this rescales the x-axis) to fit the range of years for which the employee has data.*"
-                ),
-                dbc.Accordion(
-                    children=[
-                        dbc.AccordionItem(
-                            children=[
-                                html.P(
-                                    "Set a starting compensation by selecting a job or entering a custom amount:"
-                                ),
-                                dcc.Dropdown(
-                                    id=ids.INITIAL_WAGE_DROPDOWN,
-                                    options=unique_jobs,
-                                    value="GSR (Step 5)",
-                                    placeholder="Set an starting compensation based on job or enter custom value on the right",
-                                    multi=False,
-                                    clearable=False,
-                                ),
-                                dcc.Input(
-                                    id=ids.INITIAL_WAGE_INPUT,
-                                    value=22900,  # old code: value = df_jobs.loc[(df_jobs[DataSchema.NAME]=="GSR (Step 1)") & (df_jobs[DataSchema.YEAR]==2011), DataSchema.PAY].iloc[0],
-                                    type="number",
-                                    placeholder="",
-                                    debounce=True,
-                                ),
-                            ],
-                            title="Starting Compensation: $" + str(16698),
-                            id="initial-wage-accordion-item",
+                        dcc.Graph(
+                            id=ids.REAL_WAGES_LINE_PLOT,
+                            config={"displayModeBar": False},
+                            figure={"layout": {"autosize": True, "fillframe": True}},
                         ),
-                        dbc.AccordionItem(
-                            children=[
-                                year_range_slider,
-                            ],
-                            title="Year Range: 2011-2021",
-                            id="year-range-accordion-item",
+                        html.Hr(),
+                        html.H4(
+                            "Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?"
                         ),
-                    ],
-                    always_open=True,
-                    active_item=[
-                        "item-0",
-                        "item-1",
-                    ],  # this needs to be string id (not assigned id, which starts at 0)
-                    id="bottom-accordion",
-                ),
-                dcc.Graph(
-                    id=ids.PROJECTED_WAGES_LINE_PLOT, config={"displayModeBar": False}
-                ),
-                html.Hr(),
-                html.H4(
-                    "How do your raises compare in terms of the absolute dollar amount?"
-                ),
-                dcc.Markdown(
-                    "We tend to talk about year-to-year raises in terms of percentages, but this obscures the fact that our **absolute wage growth** depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"
-                ),
-                dcc.Markdown(
-                    "See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."
-                ),
-                dcc.Markdown(
-                    "*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"
-                ),
-                html.H5("Years: 2011-2021", id="lollipop-chart-title"),
-                dcc.Graph(id=ids.LOLLIPOP_CHART, config={"displayModeBar": False}),
-                html.Hr(),
-                dbc.Accordion(
-                    children=[
-                        dbc.AccordionItem(
-                            children=[
-                                dcc.Markdown(
-                                    "Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."
-                                ),
-                                dcc.Markdown(
-                                    "Graduate student research (GSR) pay scales from 2011-2021 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."
-                                ),
-                                dcc.Markdown(
-                                    "Professor pay scales from 2011-2021 are retrieved from [here](https://ap.uci.edu/compensation/salary-scales/)."
-                                ),
-                            ],
-                            title="Data Sources",
+                        dcc.Markdown(
+                            "This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees. *Simply set your starting compensation below. You may also need to adjust the year range slider (this rescales the x-axis) to fit the range of years for which the employee has data.*"
                         ),
-                        dbc.AccordionItem(
+                        dbc.Accordion(
                             children=[
-                                dcc.Markdown(
-                                    "**This project is an active work in progress.** We are making this tool available to the public in its current state because of its relevance to the ongoing labor dispute between the UC and its 48,000 Academic Workers. It is our hope that this project helps the UC on its commitment to [Accountability and Transparency](https://ucannualwage.ucop.edu/wage/)."
+                                dbc.AccordionItem(
+                                    children=[
+                                        html.P(
+                                            "Set a starting compensation by selecting a job or entering a custom amount:"
+                                        ),
+                                        dcc.Dropdown(
+                                            id=ids.INITIAL_WAGE_DROPDOWN,
+                                            options=unique_jobs,
+                                            value="GSR (Step 5)",
+                                            placeholder="Set an starting compensation based on job or enter custom value on the right",
+                                            multi=False,
+                                            clearable=False,
+                                        ),
+                                        dcc.Input(
+                                            id=ids.INITIAL_WAGE_INPUT,
+                                            value=22900,  # old code: value = df_jobs.loc[(df_jobs[DataSchema.NAME]=="GSR (Step 1)") & (df_jobs[DataSchema.YEAR]==2011), DataSchema.PAY].iloc[0],
+                                            type="number",
+                                            placeholder="",
+                                            debounce=True,
+                                        ),
+                                    ],
+                                    title="Starting Compensation: $" + str(16698),
+                                    id="initial-wage-accordion-item",
                                 ),
-                                dcc.Markdown(
-                                    "The following are some limitations and features on our to-do list:"
+                                # dbc.AccordionItem(
+                                #     children=[
+                                #         year_range_slider,
+                                #     ],
+                                #     title="Year Range: 2011-2021",
+                                #     id="year-range-accordion-item",
+                                # ),
+                            ],
+                            always_open=True,
+                            active_item=[
+                                "item-0",
+                                "item-1",
+                            ],  # this needs to be string id (not assigned id, which starts at 0)
+                            id="bottom-accordion",
+                        ),
+                        dcc.Graph(
+                            id=ids.PROJECTED_WAGES_LINE_PLOT,
+                            config={"displayModeBar": False},
+                        ),
+                        html.Hr(),
+                        html.H4(
+                            "How do your raises compare in terms of the absolute dollar amount?"
+                        ),
+                        dcc.Markdown(
+                            "We tend to talk about year-to-year raises in terms of percentages, but this obscures the fact that our **absolute wage growth** depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"
+                        ),
+                        dcc.Markdown(
+                            "See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."
+                        ),
+                        dcc.Markdown(
+                            "*If an employee that you added is missing from the plot, adjust the year range slider (above) to match the years for which that employee has data.*"
+                        ),
+                        html.H5("Years: 2011-2021", id="lollipop-chart-title"),
+                        dcc.Graph(
+                            id=ids.LOLLIPOP_CHART, config={"displayModeBar": False}
+                        ),
+                        html.Hr(),
+                        dbc.Accordion(
+                            children=[
+                                dbc.AccordionItem(
+                                    children=[
+                                        dcc.Markdown(
+                                            "Data for UC employee wages are publicly available and retrieved from [Transparent California](https://transparentcalifornia.com/salaries/2021/university-of-california/)."
+                                        ),
+                                        dcc.Markdown(
+                                            "Graduate student research (GSR) pay scales from 2011-2021 are retrieved from [here](https://grad.ucsd.edu/financial/employment/student-pay-rates.html)."
+                                        ),
+                                        dcc.Markdown(
+                                            "Professor pay scales from 2011-2021 are retrieved from [here](https://ap.uci.edu/compensation/salary-scales/)."
+                                        ),
+                                    ],
+                                    title="Data Sources",
                                 ),
-                                dcc.Markdown(
-                                    """
+                                dbc.AccordionItem(
+                                    children=[
+                                        dcc.Markdown(
+                                            "**This project is an active work in progress.** We are making this tool available to the public in its current state because of its relevance to the ongoing labor dispute between the UC and its 48,000 Academic Workers. It is our hope that this project helps the UC on its commitment to [Accountability and Transparency](https://ucannualwage.ucop.edu/wage/)."
+                                        ),
+                                        dcc.Markdown(
+                                            "The following are some limitations and features on our to-do list:"
+                                        ),
+                                        dcc.Markdown(
+                                            """
                                     * Currently, the app is unable to distinguish between employees who share the same name. The app currently aggregates all employees of the same name for a given year. A future release will be able to distinguish these employees.
                                     * Employees making under $30K were removed from the current database. These may be added back in in the future.
                                     * Improving the speed of generating new plots
@@ -424,28 +597,35 @@ layout = html.Div(
                                     * Adding reference lines like Cost of Living for different cities to the plots
                                     * Additional visualizations may be added in the future.
                                 """
-                                ),
-                                dcc.Markdown(
-                                    "Please [DM us on twitter](https://twitter.com/collthinking420) if you wish to report any bugs or feature requests."
+                                        ),
+                                        dcc.Markdown(
+                                            "Please [DM us on twitter](https://twitter.com/collthinking420) if you wish to report any bugs or feature requests."
+                                        ),
+                                    ],
+                                    title="Limitations and Future Releases",
                                 ),
                             ],
-                            title="Limitations and Future Releases",
+                            active_item=[],
                         ),
                     ],
-                    active_item=[],
-                ),
+                    # style=CONTENT_STYLE,
+                )
             ],
-        )
+            style={"display": "flex", "flex-direction": "column"},
+            className="body-div",
+            
+        ),
     ]
 )
 
 
 print(time.time() - t0)
+
 # --------------- callback - dropdown -------
 # also - dsiable/enable refresh plot
 @callback(
     Output("compensation-type-store", "data"),
-    Output("compensation-accordion-item", "title"),
+    # Output("compensation-accordion-item", "title"),
     Input("select-compensation-dropdown", "value"),
     prevent_initial_call=False,  # want to load in background
 )
@@ -461,9 +641,9 @@ def set_compensation(COMPENSATION_TYPE):
 
     # DataSchema.PAY = compensation_type      # bad: changing global variable interferes if two instances are run on one server
 
-    title = "Type of Compensation: " + COMPENSATION_TYPE
+    # title = "Type of Compensation: " + COMPENSATION_TYPE
 
-    return COMPENSATION_TYPE, title
+    return COMPENSATION_TYPE
 
 
 # ------------- callback - save_datastore ----------------------
@@ -487,15 +667,27 @@ def set_compensation(COMPENSATION_TYPE):
 #     else:
 #         raise PreventUpdate
 
+## callback - toggle off-canvas
+@callback(
+    Output("offcanvas", "is_open"),
+    Input("open-offcanvas", "n_clicks"),
+    [State("offcanvas", "is_open")],
+)
+def toggle_offcanvas(n1, is_open):
+    if n1:
+        return not is_open
+    return is_open
+
 
 # # ------------- callback - search names in data frame ----------------
 @callback(
     Output(ids.NAME_SEARCH_RESULTS_CONTAINER, "children"),
     Input(ids.NAME_SEARCH_BUTTON, "n_clicks"),
+    Input(ids.NAME_SEARCH_INPUT, "n_submit"),
     State(ids.NAME_SEARCH_INPUT, "value"),
     prevent_initial_call=True,
 )
-def search_names(n_clicks, search_name):
+def search_names(n_clicks, n_submit, search_name):
     print("entered search_names:")
     print(search_name)
     t0 = time.time()
@@ -544,7 +736,7 @@ def search_names(n_clicks, search_name):
 
     name_search_results_container_updated = html.Div(
         children=[
-            html.Label("Select a name to add to the plots"),
+            html.Label("Select a name from search results:"),
             dash_table.DataTable(
                 data=table_data_records_list,
                 columns=[
@@ -631,13 +823,13 @@ def update_initial_wage_input(
 @callback(
     Output("filtered-names-data", "data"),
     Input(ids.NAME_ADDED_DROPDOWN, "value"),
-    Input("compensation-accordion-item", "title"),  # why?
-    State("compensation-type-store", "data"),
+    # Input("compensation-accordion-item", "title"),  # why?
+    Input("compensation-type-store", "data"),
     prevent_initial_call=True,
 )
-def filter_names_data(names, title, COMPENSATION_TYPE):
+def filter_names_data(names, COMPENSATION_TYPE):
 
-    if (names is None):
+    if names is None:
         raise PreventUpdate
 
     # IMPORTANT when dealing with categories (cat.remove_unused_categories)
@@ -666,10 +858,10 @@ def filter_names_data(names, title, COMPENSATION_TYPE):
         "filtered-names-data", "data"
     ),  # filtered names data triggers this chained callback
     State("compensation-type-store", "data"),
-    prevent_initial_call=False,
+    prevent_initial_call=True,
 )
 def filter_jobs_data(jobs, df_names_filtered, COMPENSATION_TYPE):
-    if (jobs is None):
+    if jobs is None:
         raise PreventUpdate
 
     if df_names_filtered is not None:
@@ -696,16 +888,14 @@ def filter_jobs_data(jobs, df_names_filtered, COMPENSATION_TYPE):
 # further processing by handling duplicates,
 @callback(
     Output("filtered-combined-data", "data"),
-    Output("year-range-accordion-item", "title"),
+    # Output("year-range-accordion-item", "title"),
     Input("filtered-jobs-data", "data"),
     Input(ids.YEAR_RANGE_SLIDER, "value"),
     State("compensation-type-store", "data"),
-    State("year-range-accordion-item", "title"),
+    # State("year-range-accordion-item", "title"),
     prevent_initial_call=True,
 )
-def filter_combined_data(
-    df_jobs_filtered, years, COMPENSATION_TYPE, year_range_accordion_title
-):
+def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE):
 
     df_jobs_filtered = pd.read_json(df_jobs_filtered, orient="split")
     min_year = years[0]
@@ -770,7 +960,7 @@ def filter_combined_data(
         df_combined_filtered[COMPENSATION_TYPE].astype("uint32") * 100
     )
 
-    return df_combined_filtered.to_json(orient="split"), year_range_accordion_title
+    return df_combined_filtered.to_json(orient="split")
 
 
 # ----------------- function for resetting figures -----
@@ -895,7 +1085,7 @@ def reset_figures(real_wages_axis_type):
     Output("lollipop-chart-title", "children"),
     Input(ids.INITIAL_WAGE_INPUT, "value"),
     Input("filtered-combined-data", "data"),
-    Input("refresh-figures-button", "n_clicks"),
+    # Input("refresh-figures-button", "n_clicks"),
     Input("real-wages-scale-switch", "value"),
     State(ids.YEAR_RANGE_SLIDER, "value"),
     State("traces-in-real-wages", "data"),
@@ -909,7 +1099,7 @@ def reset_figures(real_wages_axis_type):
 def update_figures(
     initial_wage,
     df_combined_filtered,
-    n_clicks,
+    # n_clicks,
     real_wages_scale_switch_value,
     years,
     df_traces_in_real_wages,
@@ -1199,8 +1389,9 @@ def update_figures(
             fig_lollipop.update_layout(height=400)
         else:
             fig_lollipop.update_layout(
-                height=(len(lollipop_y) - 6) * 50 + 400     # increase height by 30px for each additional person past 5
-            )  
+                height=(len(lollipop_y) - 6) * 50
+                + 400  # increase height by 30px for each additional person past 5
+            )
     print("figure update: " + str(time.time() - t0))
     return (
         df_traces_in_real_wages.to_json(orient="split"),
