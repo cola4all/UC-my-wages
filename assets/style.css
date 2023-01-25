@@ -163,6 +163,11 @@ hr {
     justify-content: center;
 }
 
+.emphasis-text {
+    font-weight: 700;
+    color: #88ebef;
+}
+
 #hero-text{
     flex: 0 0 95%
 }
