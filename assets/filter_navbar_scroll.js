@@ -10,7 +10,7 @@ function scrollFunction() {
     }
 
     let reveal_navbar_height = window.innerHeight*.5;
-    let navbar_height = document.getElementsByClassName("navbar")[0].offsetHeight;
+    let navbar_height = document.getElementsByClassName("navbar")[0].offsetHeight - 2;
 
     if (document.body.scrollTop > reveal_navbar_height || document.documentElement.scrollTop > reveal_navbar_height|| document.getElementById("offcanvas") != null) {
         document.getElementById("filter-navbar").style.top = navbar_height.toString() + "px";
