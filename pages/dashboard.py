@@ -406,7 +406,7 @@ hero_div = html.Div(
                     ", this information is just raw numbers. ",
                     "Our ",
                     html.Span("Wages Dashboard ", className = "emphasis-text"),
-                    "helps deliver context and ",
+                    "puts the data into perspective and helps deliver ",
                     html.Span("real transparency ", className = "emphasis-text"),
                     "by visualizing how UC employee wages ",
                     html.Span("compare to one another "),
