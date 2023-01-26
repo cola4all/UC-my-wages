@@ -23,7 +23,7 @@ import pandas as pd
 META_TAGS = [
     {
         "name": "viewport",
-        "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5,",
+        "content": "width=device-width, initial-scale=1.0, maximum-scale=1.2, minimum-scale=0.5",
     },
     {
         "name": "author",
@@ -45,8 +45,6 @@ app = dash.Dash(
     [
         dbc.themes.FLATLY, 
         dbc.icons.BOOTSTRAP, 
-        #'https://fonts.googleapis.com/css?family=Roboto',
-        #'https://fonts.googleapis.com/css2?family=Bitter&family=Roboto&display=swap',
     ],
     assets_folder="assets",
     use_pages=True,
@@ -60,7 +58,8 @@ app.index_string = """
 <html>
     <head>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,200;0,300;0,500;0,700;1,700&family=Roboto&display=swap');        </style>         
+            @import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,200;0,300;0,500;0,700;1,700&family=Roboto:wght@400;500;700&display=swap');        </style>
+        {%metas%}
         <title>UC My Wages</title>
         {%favicon%}
         {%css%}
@@ -130,7 +129,6 @@ app.layout = html.Div(
             [
                 page_container,
             ],
-            
         ),
         html.Div(
             [

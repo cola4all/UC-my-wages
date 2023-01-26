@@ -166,13 +166,7 @@ offcanvas_nav = dbc.Nav(
             ],
             id="open-offcanvas",
             n_clicks=0,
-            class_name="button shadow-none",
-            style={
-                "border-radius": "0",
-                "outline": "none",
-                "background": "rgb(105, 167, 198)",
-                "border-style": "none",
-            },
+            class_name="button",
         ),
     ],
     vertical=True,
@@ -380,12 +374,12 @@ offcanvas = dbc.Offcanvas(
 )
 
 # dashboard filter
-filter_div = html.Div(
-    [
-        offcanvas,
-        offcanvas_nav,
-    ]
-)
+# filter_div = html.Div(
+#     [
+#         offcanvas,
+#         offcanvas_nav,
+#     ]
+# )
 
 # hero section
 hero_div = html.Div(
@@ -407,17 +401,17 @@ hero_div = html.Div(
                 [
                     " The UC discloses employee wage data as part of its commitment to ",
                     html.Span("public accountability", className = "emphasis-text"),
-                    ". But these raw numbers need ",
-                    html.Span("context ", className = "emphasis-text"),
-                    "to bring about real transparency. ",
-                    html.Br(),
-                    html.Br(),
+                    ". But without ",
+                    html.Span("context", className = "emphasis-text"),
+                    ", this information is just raw numbers. ",
                     "Our ",
                     html.Span("Wages Dashboard ", className = "emphasis-text"),
-                    "makes this possible by visualizing how UC employee wages ",
-                    html.Span("compare to one another ", className = "emphasis-text"),
+                    "helps deliver context and ",
+                    html.Span("real transparency ", className = "emphasis-text"),
+                    "by visualizing how UC employee wages ",
+                    html.Span("compare to one another "),
                     "and ",
-                    html.Span("change over time", className = "emphasis-text"),
+                    html.Span("change over time"),
                     ".",
                 ],
                 id="hero-text",
