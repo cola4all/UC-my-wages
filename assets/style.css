@@ -88,7 +88,8 @@ hr {
 }
 
 #offcanvas {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(238, 241, 247, .9);
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
 }
 
 .offcanvas-backdrop {
@@ -484,13 +485,18 @@ hr {
     flex: 1 0 100%;
 } */
 
-#name-added-dropdown .Select.Select {
+#select-compensation-dropdown .Select.Select, #rate-job-dropdown .Select.Select, #name-added-dropdown .Select.Select {
     display: flex;
     height: 100%;
 }
 
-#name-added-dropdown .Select .Select-control {
+#select-compensation-dropdown .Select .Select-control, #rate-job-dropdown .Select .Select-control, #name-added-dropdown .Select .Select-control {
     height:100%;
+}
+
+#rate-job-dropdown .Select .Select-control .Select-multi-value-wrapper {
+        padding: .2rem;
+        padding-bottom: .3rem;
 }
 
 /* #name-added-dropdown .Select-control.Select-control {
@@ -501,11 +507,11 @@ hr {
     align-items: center;
 } */
 
-#name-added-dropdown .Select-control.Select-control .Select-multi-value-wrapper {
+#rate-job-dropdown .Select .Select-control .Select-multi-value-wrapper, #name-added-dropdown .Select-control.Select-control .Select-multi-value-wrapper {
     flex: 1 1 0;
 }
 
-#name-added-dropdown .Select-control.Select-control .Select-multi-value-wrapper .Select-placeholder{
+#rate-job-dropdown .Select .Select-control .Select-multi-value-wrapper .Select-placeholder, #name-added-dropdown .Select-control.Select-control .Select-multi-value-wrapper .Select-placeholder{
     display: flex;
     justify-content: center;
     align-content: center;
