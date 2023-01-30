@@ -22,7 +22,7 @@ import pandas as pd
 import os, pathlib
 import time
 
-register_page(__name__, path="/")
+register_page(__name__, path="/", title="UC My Wages")
 
 # define paths
 APP_PATH = os.path.split(str(pathlib.Path(__file__).parent.resolve()))[0]
@@ -373,27 +373,21 @@ offcanvas = dbc.Offcanvas(
     style=OFFCANVAS_STYLE,
 )
 
-# dashboard filter
-# filter_div = html.Div(
-#     [
-#         offcanvas,
-#         offcanvas_nav,
-#     ]
-# )
-
 # hero section
 hero_div = html.Div(
     [
-        html.H1(
-            [
-                " Bringing ",
-                html.Br(className="hero-header-breaks"),
-                html.Span("Pay Transparency ", style={"font-weight": "700", "color": "#82dee3"}),
-                html.Br(),
-                "to the ",
-                html.Br(className="hero-header-breaks"),
-                html.Span("University of California", style={"font-weight": "700"}),
-            ],
+        html.Div(
+            html.H1(
+                [
+                    " Bringing ",
+                    html.Br(className="hero-header-breaks"),
+                    html.Span("Pay Transparency ", style={"font-weight": "700", "color": "#82dee3"}),
+                    html.Br(),
+                    "to the ",
+                    html.Br(className="hero-header-breaks"),
+                    html.Span("University of California", style={"font-weight": "700"}),
+                ],
+            ),
             id="hero-header",
         ),
         html.Div(
@@ -528,13 +522,6 @@ layout = html.Div(
                                     title="Starting Compensation: $" + str(16698),
                                     id="initial-wage-accordion-item",
                                 ),
-                                # dbc.AccordionItem(
-                                #     children=[
-                                #         year_range_slider,
-                                #     ],
-                                #     title="Year Range: 2011-2021",
-                                #     id="year-range-accordion-item",
-                                # ),
                             ],
                             always_open=True,
                             active_item=[
@@ -710,7 +697,7 @@ def search_names(n_clicks, n_submit, search_name):
     t0 = time.time()
     unique_names_match = list(set(df_names_match[DataSchema.NAME]))
 
-    # handle if too many matches (todo: leave message)
+    # early return if no matches/too many (todo: build robust table with navigation)
     if len(unique_names_match) > 200:
         too_many_matches = html.Div(
             children=[
@@ -720,6 +707,17 @@ def search_names(n_clicks, n_submit, search_name):
             ]
         )
         return too_many_matches
+    elif len(unique_names_match) == 0:
+        no_matches = html.Div(
+            children=[
+                html.Label(
+                    "Could not find a matching result. Please search for another name.",
+                    className = "search-alert-text"
+                ),
+            ],
+            className = "search-alert-div"          
+        )
+        return no_matches
 
     # build df where each row is a unique employee w/ an employee name col and a years available col
     table_data_records_list = []

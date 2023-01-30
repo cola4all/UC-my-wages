@@ -40,7 +40,8 @@ hr {
     margin-right: 0;
 }
 
-#navbar-brand-container {
+.navbar-brand {
+    font-size: 1.1rem;
     margin-left: 0rem;
     margin-right: 0rem;
 }
@@ -104,6 +105,7 @@ hr {
 }
 
 .page-link {
+    font-size: .9rem;
     background-color: rgba(0,0,0,0);
     color: #82dee3;
     padding-left: .4rem;
@@ -156,18 +158,26 @@ hr {
     background: rgb(29,69,88);
     background: linear-gradient(180deg, rgba(29,69,88,1) 0%, rgba(29,69,88,1) 7%, rgba(36,74,93,1) 15%, rgba(42,79,97,1) 27%, rgba(61,95,112,1) 42%, rgba(82,112,127,1) 56%, rgba(117,141,153,1) 66%, rgba(159,176,184,1) 75%, rgba(221,226,229,1) 88%, rgba(238,240,242,1) 100%); 
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
+    flex-direction: column;
 }
 
 #hero-header {
-    flex: 0 0 100%;
+    flex: 2 0 content;
+    width: 90%;
+    font-size: 1.5rem;
     text-align: center;
-    padding-top: 1.8rem;
+    padding-top: 1.2rem;
     margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #hero-text-div {
-    flex: 0 0 100%;
+    flex: 1 0 content;
+    width: 95%;
     text-align: center;
     padding: 1rem;
     display: flex;
@@ -180,19 +190,19 @@ hr {
 }
 
 #hero-text{
-    flex: 0 0 95%;
     margin-bottom: 0;
-    font-size: .95rem;
-
+    font-size: .85rem;
 }
 
 #hero-buttons-div {
+    flex: 1 0 content;
     display: flex;
     align-items: center;
     padding-bottom: 6rem;
     flex-wrap: wrap;
     justify-content: center;
-    width: 80%
+    width: 80%;
+    flex: 1 1 50%;
 }
 
 
@@ -206,14 +216,15 @@ hr {
 }
 
 .hero-button {
-    flex: 0 0 13.5rem;
+    flex: 0 0 13rem;
     white-space: nowrap;
     text-decoration: none;
     text-align: center;
     margin-left: 1rem;
     margin-right: 1rem;
-    padding: .4rem;
+    padding: .2rem;
     box-shadow: rgba(0, 0, 0, .5) 0px 5px 15px;
+    font-size: .9rem;
 } 
 
 #hero-secondary-button {
@@ -405,6 +416,17 @@ hr {
     width: 12rem;
 }
 
+.search-alert-div {
+    color: white;
+    background-color: #d17979;
+    border-radius: .25rem;
+    width: fit-content
+}
+
+.search-alert-text {
+    padding: .5rem;
+}
+
 #name-added-dropdown, #rate-job-dropdown {
     flex: 1 0 100%;
     padding: 0;
@@ -519,10 +541,71 @@ hr {
     flex-direction: column;
 }
 
+#content-div{
+    padding-left: .3rem;
+    padding-right: .3rem;
+}
+
+@media (min-width: 375px) {
+    #content-div{
+        padding-left: .8rem;
+        padding-right: .8rem;
+    }
+
+    #hero-header{
+        font-size: 1.8rem;
+    }
+
+    #hero-text{
+        flex: 0 0 95%;
+        font-size: .95rem;
+    }
+
+    .hero-button{
+        flex: 0 0 13.5rem;
+        padding: .4rem;
+    }
+
+    .page-link{
+        font-size: 1rem;
+    }
+
+    .navbar-brand{
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 390px) {
+
+    #hero-text{
+        flex: 0 0 95%;
+        font-size: 1rem;
+    }
+
+    .hero-button{
+        flex: 0 0 13.5rem;
+        padding: .5rem;
+    }
+
+    .page-link{
+        font-size: 1rem;
+    }
+
+    .navbar-brand{
+        font-size: 1.1rem;
+    }
+}
+
+
 @media (min-width: 414px) {
     #hero-text{
         flex: 0 0 90%;
         font-size: 1rem;
+    }
+
+    #content-div{
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     .hero-button {
@@ -556,12 +639,23 @@ hr {
         flex: 0 0 90%;
         font-size: 1.1rem;
     }
+
+    #content-div{
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
 }
 
 @media (min-width: 810px) {
 
     body {
         font-size: larger;
+    }
+
+    #content-div{
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
 
     .hero-header-breaks{
@@ -574,19 +668,21 @@ hr {
     }
 
     #hero-text{
-        flex: 0 0 50%;
-        font-size: 1.2rem;
+        flex: 0 0 70%;
+        font-size: 1.15rem;
     }
 
     .hero-button {
         flex: 0 0 18rem;
-        padding: 1rem;
+        padding: .5rem;
         margin-left: 3rem;
         margin-right: 3rem;
+        font-size: 1.15rem;
     }
 
     #hero-buttons-div {
         padding-bottom: 9rem;
+        gap: 1rem;
     }
 
     .rc-slider-mark {
@@ -630,6 +726,11 @@ hr {
         display: none;
     }
 
+    #content-div{
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+
     #hero-header {
         padding-top: 2.2rem;
         font-size: 4rem;
@@ -637,13 +738,14 @@ hr {
 
     #hero-text{
         flex: 0 0 50%;
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
 
     .hero-button {
         flex: 0 0 18rem;
-        padding: 1rem;
+        padding: .75rem;
         margin-left: 3rem;
         margin-right: 3rem;
+        font-size: 1.2rem;
     }
 }
