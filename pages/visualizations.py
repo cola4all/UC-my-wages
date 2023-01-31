@@ -21,7 +21,7 @@ import time
 import numpy as np
 
 
-register_page(__name__, path="/dataviz")
+register_page(__name__, path="/dataviz", title="UC My Wages - Data Visualizations", description= "A collection of graphics related the employee compensation at the University of Southern California.")
 
 APP_PATH = os.path.split(str(pathlib.Path(__file__).parent.resolve()))[
     0

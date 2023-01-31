@@ -31,7 +31,7 @@ META_TAGS = [
     },
     {
         "name": "description",
-        "content": "A simple tool for searching and visualizing University of California employee wage data.",
+        "content": "Use our tool to look up the salaries of University of California employees. You can visualize how UC employee wages compare to one another and change from year to year.",
     },
     {
         "name": "title",
