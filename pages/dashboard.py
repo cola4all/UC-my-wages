@@ -22,7 +22,7 @@ import pandas as pd
 import os, pathlib
 import time
 
-register_page(__name__, path="/", title="UC My Wages", description="Use our tool to look up the salaries of University of California employees. You can visualize how UC employee wages compare to one another and change from year to year.")
+register_page(__name__, path="/", title="UC My Wages - Visualize Salaries of University of California Employees", description="Use our tool to look up the salaries of University of California employees. You can visualize how UC employee wages compare to one another and change from year to year.")
 
 # define paths
 APP_PATH = os.path.split(str(pathlib.Path(__file__).parent.resolve()))[0]

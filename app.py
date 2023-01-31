@@ -35,7 +35,7 @@ META_TAGS = [
     },
     {
         "name": "title",
-        "content": "UC My Wages",
+        "content": "UC My Wages - Visualize Salaries of University of California Employees",
     },
 ]
 
@@ -52,7 +52,7 @@ app = dash.Dash(
 )
 server = app.server
 
-app.title = "UC My Wages"
+app.title = "UC My Wages - Visualize Salaries of University of California Employees"
 app.index_string = """
 <!DOCTYPE html>
 <html>
