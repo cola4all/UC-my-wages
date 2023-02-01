@@ -397,7 +397,7 @@ hero_div = html.Div(
                     html.Span("public accountability", className = "emphasis-text"),
                     ". But without ",
                     html.Span("context", className = "emphasis-text"),
-                    ", this information is just raw numbers. ",
+                    ", the raw numbers aren't very useful. ",
                     "Our ",
                     html.Span("Wages Dashboard ", className = "emphasis-text"),
                     "puts the data into perspective and helps deliver ",
