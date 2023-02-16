@@ -155,6 +155,7 @@ hr {
 #hero-div {
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    min-height: 100svh;
     background: rgb(29,69,88);
     background: linear-gradient(180deg, rgba(29,69,88,1) 0%, rgba(29,69,88,1) 7%, rgba(36,74,93,1) 15%, rgba(42,79,97,1) 27%, rgba(61,95,112,1) 42%, rgba(82,112,127,1) 56%, rgba(117,141,153,1) 66%, rgba(159,176,184,1) 75%, rgba(221,226,229,1) 88%, rgba(238,240,242,1) 100%); 
     justify-content: center;
