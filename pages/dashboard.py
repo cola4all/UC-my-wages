@@ -927,11 +927,9 @@ def filter_combined_data(df_jobs_filtered, years, COMPENSATION_TYPE):
     if len(df_duplicates) > 0:
         df_duplicates = df_duplicates.merge(
             df_combined_filtered.loc[
-                df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(
-                    keep=False
-                ),
+                df_combined_filtered[[DataSchema.YEAR, DataSchema.NAME]].duplicated(keep=False),
                 DataSchema.NAME,
-            ].cat.remove_unused_categories(),
+            ],
             left_index=True,
             right_index=True,
         )
