@@ -4,5 +4,5 @@ fastparquet==0.5.0
 pyarrow==8.0.0
 numpy==1.23.5
 dash_extensions
-pandas
+pandas==1.5.2
 gunicorn
