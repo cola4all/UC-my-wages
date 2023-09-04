@@ -96,7 +96,7 @@ print(df_names.info(memory_usage="deep"))
 t0 = time.time()
 
 cat_type_year = pd.api.types.CategoricalDtype(
-    categories=[2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+    categories=[2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022],
     ordered=True,
 )
 df_jobs["Year"] = df_jobs["Year"].astype(cat_type_year)
@@ -203,9 +203,9 @@ compensation_type_container = dbc.Row(
 
 year_range_slider = dcc.RangeSlider(
     min=2011,
-    max=2021,
+    max=2022,
     step=1,
-    value=[2011, 2021],
+    value=[2011, 2022],
     marks={
         2011: "2011",
         2012: "2012",
@@ -218,6 +218,7 @@ year_range_slider = dcc.RangeSlider(
         2019: "2019",
         2020: "2020",
         2021: "2021",
+        2022: "2022",
     },
     id=ids.YEAR_RANGE_SLIDER,
 )
