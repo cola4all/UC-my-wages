@@ -115,8 +115,8 @@ job_container = html.Div(
             id=ids.RATE_JOB_DROPDOWN,
             options=unique_jobs,
             value=[
-                "GSR (Step 5)",
-                "Teaching Assistant",
+                "GSR (Step 3)",
+                "Teaching Assistant (Step 2, Group 1 Campus)",
                 "Assistant Professor (II)",
                 "Associate Professor (II)",
                 "Professor (II)",
@@ -254,8 +254,8 @@ add_positions_container = html.Div(
         dcc.Dropdown(
             options=unique_jobs,
             value=[
-                "GSR (Step 5)",
-                "Teaching Assistant",
+                "GSR (Step 3)",
+                "Teaching Associate (Step 4, Group 1 Campus)",
                 "Assistant Professor (II)",
                 "Associate Professor (II)",
                 "Professor (II)",
