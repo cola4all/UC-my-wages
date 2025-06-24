@@ -465,7 +465,7 @@ layout = html.Div(
                             "How does your compensation stack up against other UC employees?"
                         ),
                         dcc.Markdown(
-                            "Open the plot controls, search for UC employees, and add selected name(s) to the plots *(e.g., pradeep khosla; gene block; michael drake; jagdeep bachher)*. You can also search for certain positions to plot their wage data. Hover or click on a data point to compare across all employees for that year. "
+                            "Open the plot controls, search for UC employees, and add selected name(s) to the plots *(e.g., pradeep khosla; gene block; michael drake; jagdeep bachher)*.\n\nYou can also search for certain positions to plot their wage data. Hover or click on a data point for details."
                         ),
                         html.Div(
                             [
