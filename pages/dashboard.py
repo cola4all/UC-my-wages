@@ -275,7 +275,7 @@ name_search_container = html.Div(
             placeholder="enter an employee name...",
             debounce=True,
         ),
-        dbc.Button("Search", id="name-search-button", className="button"),
+        dbc.Button("Search", id="name-search-button", className="button")
     ],
     style={"display": "flex", "flex-wrap": "nowrap"},
 )
@@ -465,7 +465,7 @@ layout = html.Div(
                             "How does your compensation stack up against other UC employees?"
                         ),
                         dcc.Markdown(
-                            "Open the plot controls and search for UC employees by name to add them to the plots. You can also search for certain positions to plot their aggregated wage data. Hover or click on a data point to compare across all employees for that year."
+                            "Open the plot controls, search for UC employees, and add selected name(s) to the plots *(e.g., pradeep khosla; gene block; michael drake; jagdeep bachher)*. You can also search for certain positions to plot their wage data. Hover or click on a data point to compare across all employees for that year. "
                         ),
                         html.Div(
                             [
