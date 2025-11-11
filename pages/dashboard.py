@@ -96,7 +96,7 @@ print(df_names.info(memory_usage="deep"))
 t0 = time.time()
 
 cat_type_year = pd.api.types.CategoricalDtype(
-    categories=[2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023],
+    categories=[2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
     ordered=True,
 )
 df_jobs["Year"] = df_jobs["Year"].astype(cat_type_year)
@@ -203,9 +203,9 @@ compensation_type_container = dbc.Row(
 
 year_range_slider = dcc.RangeSlider(
     min=2011,
-    max=2023,
+    max=2024,
     step=1,
-    value=[2011, 2023],
+    value=[2011, 2024],
     marks={
         2011: "2011",
         2012: "2012",
@@ -220,6 +220,7 @@ year_range_slider = dcc.RangeSlider(
         2021: "2021",
         2022: "2022",
         2023: "2023",
+        2024: "2024",
     },
     id=ids.YEAR_RANGE_SLIDER,
 )
@@ -292,8 +293,9 @@ name_add_container = html.Div(
         dbc.Button("Add Selected Name", id=ids.NAME_ADD_BUTTON, className="button"),
         dcc.Dropdown(
             id=ids.NAME_ADDED_DROPDOWN,
-            value=[],
-            options=[],
+            
+            options=["jagdeep bachher", "pradeep khosla", "gene block"],
+            value=["jagdeep bachher", "pradeep khosla", "gene block"],
             multi=True,
             placeholder="add selected employee to plots...",
         ),
@@ -462,10 +464,10 @@ layout = html.Div(
                         ),  # max_intervals = 0 ensures callback only runs once at startup
                         html.A(id="dashboard"),
                         html.H4(
-                            "How does your compensation stack up against other UC employees?"
+                            "How does your compensation stack up to other UC employees?"
                         ),
                         dcc.Markdown(
-                            "Open the plot controls, search for UC employees, and add selected name(s) to the plots *(e.g., pradeep khosla; gene block; michael drake; jagdeep bachher)*.\n\nYou can also search for certain positions to plot their wage data. Hover or click on a data point for details."
+                            "Open the plot controls, search for UC employees, and add selected name(s) to the plots.\n\n*By default, Chief Investment Officer Jagdeep Bachher, UC President Michael Drake, UCSD Chancellor Pradeep Khosla, and UCLA Chancellor Gene Block are added to the plot, as well as Salary Scales for Teaching Associate, Graduate Student Researcher, and Professors. The defaults can be removed via the plot controls.*\n\nClick on a data point for details. Plot axis can be toggled between linear and log scale (default: log)."
                         ),
                         html.Div(
                             [
@@ -475,7 +477,7 @@ layout = html.Div(
                                         dbc.Col(dbc.Label("linear"), className="pe-2"),
                                         dbc.Col(
                                             dbc.Switch(
-                                                value=False,
+                                                value=True,
                                                 id="real-wages-scale-switch",
                                             ),
                                             className="p-0",
@@ -493,7 +495,7 @@ layout = html.Div(
                         ),
                         html.Hr(),
                         html.H4(
-                            "Ever wonder what your compensation might be if it grew at the same rate as your peers, employees, or bosses?"
+                            "What would your compensation be if it grew at the same rate as your peers or bosses?"
                         ),
                         dcc.Markdown(
                             "This plot projects how your specified starting compensation would change if you received the same year-to-year percentage-based raises as other employees. *Simply set your starting compensation below. You may also need to adjust the year range slider (this rescales the x-axis) to fit the range of years for which the employee has data.*"
@@ -541,7 +543,7 @@ layout = html.Div(
                             "How do your raises compare in terms of the absolute dollar amount?"
                         ),
                         dcc.Markdown(
-                            "We tend to talk about year-to-year raises in terms of percentages, but this obscures the fact that our **absolute wage growth** depends on this percentage **as well as our prior year's salary.** Tying our raises to our prior year's salary is great for high-income earners, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"
+                            "We tend to talk about year-to-year raises in terms of percentages, but this obscures the fact that our **absolute wage growth** also depends on our **prior year's salary.** Tying raises to existing salaries is great for those who already have high incomes, but not so much for low-income workers. **This system locks lower-paid positions out of real wage growth, puts workers at the mercy of unpredictable rises in cost of living, and exacerabates income disparities between higher-paid executives and lower-paid workers.**"
                         ),
                         dcc.Markdown(
                             "See how this disparity plays out in the UC system by comparing higher-paid employees to lower-paid employees in the following plot. The length of each line conveys a sense of the employee's raise over the provided year range. The further to the right, the more the employee earns."
