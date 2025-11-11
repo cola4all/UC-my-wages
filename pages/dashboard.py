@@ -294,8 +294,8 @@ name_add_container = html.Div(
         dcc.Dropdown(
             id=ids.NAME_ADDED_DROPDOWN,
             
-            options=["jagdeep bachher", "pradeep khosla", "gene block"],
-            value=["jagdeep bachher", "pradeep khosla", "gene block"],
+            options=["jagdeep bachher", "michael drake", "pradeep khosla", "gene block"],
+            value=["jagdeep bachher", "michael drake", "pradeep khosla", "gene block"],
             multi=True,
             placeholder="add selected employee to plots...",
         ),
